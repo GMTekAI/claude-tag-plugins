@@ -1,0 +1,7 @@
+{
+  "name": "claude-tag-troubleshoot",
+  "version": "1.0.0",
+  "description": "Guides configuration of @Claude agents — agent scopes, identity profiles, connections, repos, and instructions — and diagnoses plugin/skill loading problems from inside a running session.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

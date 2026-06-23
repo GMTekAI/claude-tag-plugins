@@ -1,0 +1,53 @@
+claude-tag-plugins
+Copyright 2026 Anthropic PBC
+
+This product includes software developed by Anthropic (https://www.anthropic.com/).
+
+================================================================================
+Third-party software
+================================================================================
+
+The claude-tag-data-viz plugin bundles the following third-party JavaScript
+libraries under third_party/. Each is redistributed unmodified under its
+original MIT license; the verbatim upstream license text is included
+alongside the bundled files.
+
+  React, ReactDOM, react-is
+    Copyright (c) Meta Platforms, Inc. and affiliates.
+    License: third_party/react/LICENSE
+    Source:  https://github.com/facebook/react
+
+  Recharts
+    Copyright (c) 2015-present recharts
+    License: third_party/recharts/LICENSE
+    Source:  https://github.com/recharts/recharts
+
+react-dom.production.min.js additionally embeds a portion of Modernizr
+(https://modernizr.com/), distributed under the MIT License.
+
+The Recharts UMD bundle (third_party/recharts/Recharts.js) includes the
+following transitive dependencies, each distributed under its original
+permissive license:
+
+  d3-array, d3-color, d3-format, d3-interpolate, d3-path, d3-scale,
+  d3-shape, d3-time, d3-time-format
+    Copyright 2010-2022 Mike Bostock
+    License: ISC
+    Source:  https://github.com/d3
+
+  lodash
+    Copyright OpenJS Foundation and other contributors
+    Based on Underscore.js, copyright Jeremy Ashkenas, DocumentCloud and
+    Investigative Reporters & Editors
+    License: MIT
+    Source:  https://github.com/lodash/lodash
+
+  eventemitter3
+    Copyright (c) 2014 Arnout Kazemier
+    License: MIT
+    Source:  https://github.com/primus/eventemitter3
+
+  decimal.js-light
+    Copyright (c) 2020 Michael Mclaughlin
+    License: MIT
+    Source:  https://github.com/MikeMcl/decimal.js-light

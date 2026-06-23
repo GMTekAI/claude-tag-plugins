@@ -1,0 +1,7 @@
+{
+  "name": "hubspot",
+  "version": "1.0.0",
+  "description": "Access HubSpot contacts, companies, deals, and tickets — search and manage CRM records.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

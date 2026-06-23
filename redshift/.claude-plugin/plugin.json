@@ -1,0 +1,7 @@
+{
+  "name": "redshift",
+  "version": "1.0.0",
+  "description": "Access Amazon Redshift — run SQL queries, poll results, and browse schemas and tables.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

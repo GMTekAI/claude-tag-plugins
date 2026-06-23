@@ -1,0 +1,7 @@
+{
+  "name": "asana",
+  "version": "1.0.0",
+  "description": "Access Asana tasks, projects, sections, and comments — list, search, create, and update.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

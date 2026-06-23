@@ -1,0 +1,120 @@
+{
+  "name": "claude-tag-plugins",
+  "owner": {
+    "name": "Anthropic"
+  },
+  "plugins": [
+    {
+      "name": "asana",
+      "displayName": "Asana",
+      "source": "./asana",
+      "description": "Access Asana tasks, projects, sections, and comments — list, search, create, and update.",
+      "category": "project-management"
+    },
+    {
+      "name": "bigquery",
+      "displayName": "Google BigQuery",
+      "source": "./bigquery",
+      "description": "Access Google BigQuery datasets and tables — run SQL, fetch schemas, and manage jobs.",
+      "category": "data"
+    },
+    {
+      "name": "confluence",
+      "displayName": "Confluence",
+      "source": "./confluence",
+      "description": "Access Confluence pages, spaces, and comments — search, read, create, and update content.",
+      "category": "project-management"
+    },
+    {
+      "name": "datadog",
+      "displayName": "Datadog",
+      "source": "./datadog",
+      "description": "Access Datadog logs, metrics, monitors, dashboards, SLOs, events, traces, and incidents.",
+      "category": "observability"
+    },
+    {
+      "name": "enterprise-search",
+      "displayName": "Enterprise Search",
+      "source": "./enterprise-search",
+      "description": "Access your company's knowledge index — search across all connected sources, read documents, and submit relevance feedback.",
+      "category": "productivity"
+    },
+    {
+      "name": "google-drive",
+      "displayName": "Google Drive",
+      "source": "./google-drive",
+      "description": "Access Google Drive files and folders — search, read, upload, share, and export Docs and Sheets.",
+      "category": "productivity"
+    },
+    {
+      "name": "grafana",
+      "displayName": "Grafana",
+      "source": "./grafana",
+      "description": "Access Grafana dashboards, datasource queries, alerts, annotations, and folders.",
+      "category": "observability"
+    },
+    {
+      "name": "hubspot",
+      "displayName": "HubSpot",
+      "source": "./hubspot",
+      "description": "Access HubSpot contacts, companies, deals, and tickets — search and manage CRM records.",
+      "category": "crm"
+    },
+    {
+      "name": "jira",
+      "displayName": "Jira",
+      "source": "./jira",
+      "description": "Access Jira issues, sprints, and comments — search with JQL, create, and transition issues.",
+      "category": "project-management"
+    },
+    {
+      "name": "linear",
+      "displayName": "Linear",
+      "source": "./linear",
+      "description": "Access Linear issues, projects, cycles, and teams.",
+      "category": "project-management"
+    },
+    {
+      "name": "notion",
+      "displayName": "Notion",
+      "source": "./notion",
+      "description": "Access Notion pages, databases, and blocks — search and read content.",
+      "category": "project-management"
+    },
+    {
+      "name": "pagerduty",
+      "displayName": "PagerDuty",
+      "source": "./pagerduty",
+      "description": "Access PagerDuty incidents, on-call schedules, escalation policies, and services.",
+      "category": "observability"
+    },
+    {
+      "name": "redshift",
+      "displayName": "Amazon Redshift",
+      "source": "./redshift",
+      "description": "Access Amazon Redshift — run SQL queries, poll results, and browse schemas and tables.",
+      "category": "data"
+    },
+    {
+      "name": "salesforce",
+      "displayName": "Salesforce",
+      "source": "./salesforce",
+      "description": "Access Salesforce records — run SOQL queries, create, read, update, and delete objects.",
+      "category": "crm"
+    },
+    {
+      "name": "sentry",
+      "displayName": "Sentry",
+      "source": "./sentry",
+      "description": "Access Sentry issues, events, projects, releases, and stats.",
+      "category": "observability"
+    },
+    {
+      "name": "snowflake",
+      "displayName": "Snowflake",
+      "source": "./snowflake",
+      "description": "Access Snowflake — run SQL statements, poll and fetch results, and browse warehouses.",
+      "category": "data"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "grafana",
+  "version": "1.0.0",
+  "description": "Access Grafana dashboards, datasource queries, alerts, annotations, and folders.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "notion",
+  "version": "1.0.0",
+  "description": "Access Notion pages, databases, and blocks — search and read content.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "enterprise-search",
+  "version": "1.0.0",
+  "description": "Access your company's knowledge index — search across all connected sources, read documents, and submit relevance feedback.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

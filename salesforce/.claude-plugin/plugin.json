@@ -1,0 +1,7 @@
+{
+  "name": "salesforce",
+  "version": "1.0.0",
+  "description": "Access Salesforce records — run SOQL queries, create, read, update, and delete objects.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

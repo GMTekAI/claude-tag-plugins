@@ -1,0 +1,7 @@
+{
+  "name": "sentry",
+  "version": "1.0.0",
+  "description": "Access Sentry issues, events, projects, releases, and stats.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "google-drive",
+  "version": "1.0.0",
+  "description": "Access Google Drive files and folders — search, read, upload, share, and export Docs and Sheets.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

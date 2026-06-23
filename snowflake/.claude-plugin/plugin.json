@@ -1,0 +1,7 @@
+{
+  "name": "snowflake",
+  "version": "1.0.0",
+  "description": "Access Snowflake — run SQL statements, poll and fetch results, and browse warehouses.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

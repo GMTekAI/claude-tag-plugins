@@ -1,0 +1,7 @@
+{
+  "name": "bigquery",
+  "version": "1.0.0",
+  "description": "Access Google BigQuery datasets and tables — run SQL, fetch schemas, and manage jobs.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}
