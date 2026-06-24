@@ -36,10 +36,12 @@ jobs:
           path-to-signatures: "signatures/cla.json"
           branch: "cla-signatures"
           # noreply@anthropic.com is the email AI assistants use on
-          # Co-authored-by trailers (e.g. Claude). Allowlisting it suppresses
-          # the synthetic co-author from the CLA check; the PR opener still
-          # has to sign.
-          allowlist: "dependabot[bot],github-actions[bot],renovate[bot],noreply@anthropic.com"
+          # Co-authored-by trailers; opensource@anthropic.com is the neutral
+          # publish identity used for sync commits. Allowlisting these
+          # suppresses the synthetic authors from the CLA check; the PR opener
+          # (a verified GitHub actor) still has to sign or be allowlisted by
+          # username below.
+          allowlist: "Briiick,hackyon-anthropic,dependabot[bot],github-actions[bot],renovate[bot],noreply@anthropic.com,opensource@anthropic.com"
 
       # Merge queue support. The CLA action above only runs on
       # pull_request_target, so without this step the required "CLAAssistant"
