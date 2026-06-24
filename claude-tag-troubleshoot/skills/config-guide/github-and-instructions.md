@@ -9,7 +9,7 @@ Two separate settings control repository access. They are easy to confuse:
    across every bound profile** (union).
 
 2. **Default source repos on an agent scope** — which repos are *auto-cloned*
-   into new sessions. This is **first-non-empty along the chain**: a agent scope that
+   into new sessions. This is **first-non-empty along the chain**: an agent scope that
    sets any value replaces its parent's list entirely; leave it empty to
    inherit.
 

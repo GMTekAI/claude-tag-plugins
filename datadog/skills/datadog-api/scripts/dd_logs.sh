@@ -166,12 +166,11 @@ print_page() {
   fi
 }
 
-if [ "$FORMAT" = "tsv" ]; then printf 'timestamp\tstatus\tservice\thost\tmessage\n'; fi
-
 URL="${BASE_URL}/api/v2/logs/events/search"
 CURSOR=""
 FETCHED=0
 TRUNCATED=false
+HEADER_PRINTED=false
 
 while :; do
   WANT="$PAGE_SIZE"
@@ -183,6 +182,11 @@ while :; do
   BODY="$(build_body "$WANT" "$CURSOR")"
   PAGE="$(dd_api -X POST "$URL" -d "$BODY")"
   dd_check_error "$PAGE"
+
+  if [ "$FORMAT" = "tsv" ] && [ "$HEADER_PRINTED" = "false" ]; then
+    printf 'timestamp\tstatus\tservice\thost\tmessage\n'
+    HEADER_PRINTED=true
+  fi
 
   COUNT="$(jq -r '[.data[]?] | length' <<<"$PAGE")"
   TAKE="$COUNT"

@@ -56,10 +56,10 @@ Most endpoints accept a trailing slash; a few require it.
 
 Two entry points with the same query grammar: org-wide and per-project.
 
-- **`GET /api/0/organizations/{org}/issues/`** — Search across org. Params: `query`, `sort` (`date`/`new`/`freq`/`user`/`trends`/`inbox`), `statsPeriod` (e.g. `24h`, `14d`), `start`/`end` (ISO-8601, alternative to statsPeriod), `project` (numeric ID, repeatable), `environment` (repeatable), `cursor`, `limit` (≤100), `shortIdLookup=1` to allow bare short IDs in `query`.
+- **`GET /api/0/organizations/{org}/issues/`** — Search across org. Params: `query`, `sort` (`date`/`new`/`freq`/`user`/`trends`/`inbox`/`recommended`), `statsPeriod` (e.g. `24h`, `14d`), `start`/`end` (ISO-8601, alternative to statsPeriod), `project` (numeric ID or slug, repeatable), `environment` (repeatable), `cursor`, `limit` (≤100), `shortIdLookup=1` to allow bare short IDs in `query`.
 - **`GET /api/0/projects/{org}/{project}/issues/`** — Same, project-scoped.
 - **`GET /api/0/organizations/{org}/issues/{issue_id}/`** — One issue. Includes `stats` (24h/30d series), `firstRelease`, `lastRelease`, `activity`, `userReportCount`.
-- **`PUT /api/0/organizations/{org}/issues/{issue_id}/`** — Update. Body: `{"status":"resolved"|"resolvedInNextRelease"|"unresolved"|"ignored","statusDetails":{...},"assignedTo":"user@x"|"team:slug","hasSeen":bool,"isBookmarked":bool,"isSubscribed":bool,"isPublic":bool}`.
+- **`PUT /api/0/organizations/{org}/issues/{issue_id}/`** — Update. Body: `{"status":"resolved"|"resolvedInNextRelease"|"unresolved"|"ignored","statusDetails":{...},"assignedTo":"user@x"|"team:<team_id>","hasSeen":bool,"isBookmarked":bool,"isSubscribed":bool,"isPublic":bool}`. The numeric team id comes from `GET /api/0/organizations/{org}/teams/`.
 - **`DELETE /api/0/organizations/{org}/issues/{issue_id}/`** — Delete (async).
 - **`PUT/DELETE /api/0/organizations/{org}/issues/`** — Bulk. Pass `?id=1&id=2` or `?query=is:ignored` to select. Same PUT body as single.
 - **`GET /api/0/organizations/{org}/issues/{issue_id}/events/`** — Events in the group. Params: `query` (filter within the group), `environment`, `statsPeriod`, `cursor`, `per_page`, `full=true` (include stack traces in list), `sample=true` (pseudo-random order).
@@ -101,7 +101,7 @@ Frames are ordered **outermost → innermost** (the crash site is `frames[-1]`).
 
 Cross-project, column-selectable event queries (the "Discover" / "Explore" feature in the UI).
 
-- **`GET /api/0/organizations/{org}/events/`** — Params: `field` (repeatable, e.g. `title`, `count()`, `p95(transaction.duration)`), `query`, `sort`, `per_page`, `statsPeriod` or `start`/`end`, `project`, `environment`, `dataset` (`errors`/`transactions`/`discover`).
+- **`GET /api/0/organizations/{org}/events/`** — Params: `field` (repeatable, e.g. `title`, `count()`, `p95(transaction.duration)`), `query`, `sort`, `per_page`, `statsPeriod` or `start`/`end`, `project`, `environment`, `dataset` (`errors`/`logs`/`profile_functions`/`spans`/`tracemetrics`/`uptime_results`; `transactions`/`discover` are legacy).
 - **`GET /api/0/organizations/{org}/events-stats/`** — Time-series. Params as above plus `interval`, `yAxis` (repeatable aggregate).
 - **`GET /api/0/organizations/{org}/events-meta/`** — Count matching events (`{"count": N}`).
 
@@ -151,8 +151,9 @@ aggregate, org-scoped).
 
 **Slugs vs IDs.** Organizations and projects are addressed by **slug** in the URL. Issues, events,
 rules, members are addressed by **numeric/hex ID**. Cross-org endpoints that filter by project
-(`issues/`, `events/`, `stats_v2/`) want the **numeric project ID** in the `project` param, not the
-slug. Fetch IDs from `/api/0/organizations/{org}/projects/`.
+(`issues/`, `events/`, `stats_v2/`) accept either the **numeric project ID** or the slug in the
+`project` param per current docs; pass the numeric ID for robustness across older self-hosted
+versions. Fetch IDs from `/api/0/organizations/{org}/projects/`.
 
 **Time filters.** `statsPeriod` (relative: `1h`, `24h`, `14d`, `90d`) and `start`/`end` (ISO-8601)
 are mutually exclusive. Most endpoints default to 14 days. `start`/`end` unlocks ranges longer than

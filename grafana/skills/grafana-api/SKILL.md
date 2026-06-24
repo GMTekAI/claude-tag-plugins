@@ -1,6 +1,6 @@
 ---
 name: grafana-api
-description: Work with a Grafana instance — search and read dashboards, run datasource queries (Prometheus, Loki, PostgreSQL, etc.), inspect alert rules and silences, post annotations, and manage folders. Use this whenever the user mentions a Grafana dashboard, panel, or alert; pastes a Grafana URL; asks "what does this dashboard show", "query this metric in Grafana", "is this alert firing", "silence this alert", or wants to create/export a dashboard — even if they don't say "API".
+description: Work with a Grafana instance — search and read dashboards, run datasource queries (Prometheus, Loki, PostgreSQL, etc.), inspect alert rules and silences, post annotations, and manage folders. Use this whenever the user mentions a Grafana dashboard, panel, or alert; pastes a Grafana URL; asks "what does this dashboard show", "query this metric in Grafana", "is this alert firing", "silence this alert", or wants to create/export a dashboard — even if they don't say "API". Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 Grafana's base URL is the instance: Grafana Cloud at `https://<your-org>.grafana.net`, or self-hosted at
@@ -138,11 +138,14 @@ grafana "${GRAFANA_URL}/api/alertmanager/grafana/api/v2/silences" | \
   jq '.[] | select(.status.state=="active") | {id, comment, matchers, endsAt}'
 
 # create a 2-hour silence matching a label
+# GNU date; on BSD/macOS use: date -u -v+2H +%Y-%m-%dT%H:%M:%SZ
+START=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+END=$(date -u -d "+2 hours" +%Y-%m-%dT%H:%M:%SZ)
 grafana -X POST "${GRAFANA_URL}/api/alertmanager/grafana/api/v2/silences" \
   -H "Content-Type: application/json" \
   -d '{
     "matchers": [{"name": "alertname", "value": "HighErrorRate", "isRegex": false, "isEqual": true}],
-    "startsAt": "2025-01-01T00:00:00Z", "endsAt": "2025-01-01T02:00:00Z",
+    "startsAt": "'"${START}"'", "endsAt": "'"${END}"'",
     "createdBy": "api", "comment": "investigating"
   }'
 # success → {"silenceID": "..."}
@@ -195,8 +198,9 @@ narrow with `query=`, `tag=`, or `folderUIDs=` instead of paging through everyth
 
 ## Rate limits
 
-Self-hosted Grafana has no built-in per-token rate limits by default. Grafana Cloud enforces
-per-tenant limits and returns `429` — honor `Retry-After` if present, otherwise back off.
+Self-hosted Grafana has no built-in per-token rate limits by default. Grafana Cloud may return
+`429` on heavy API or query traffic — limits vary by plan and endpoint, so honor `Retry-After`
+if present, otherwise back off.
 **`/api/ds/query` is the expensive path**: each call fans out to the underlying database, so batch
 multiple `queries[]` into one request instead of looping.
 

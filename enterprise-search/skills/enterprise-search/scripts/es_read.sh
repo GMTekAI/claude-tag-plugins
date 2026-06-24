@@ -59,7 +59,7 @@ done
 [ -n "$BASE_URL" ] || { err "GLEAN_BASE_URL is not set"; exit 1; }
 BASE_URL="${BASE_URL%/}"
 
-# cap one request at 50 ids — glean's documented documentSpecs maximum
+# cap one request at 50 ids — a defensive batch limit, not a documented glean maximum
 if [ "${#IDS[@]}" -gt 50 ]; then
   err "too many ids (${#IDS[@]}); maximum is 50 per call"
   exit 1
@@ -79,8 +79,14 @@ payload=$(printf '%s' "$resp" | sed '$d')
 
 if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
   msg=$(printf '%s' "$payload" \
-    | jq -r '.detail // .errorMessage // .' 2>/dev/null || printf '%s' "$payload")
+    | jq -r '.errorMessages[0].errorMessage // .detail // .errorMessage // .' 2>/dev/null \
+    || printf '%s' "$payload")
   err "api error (http $status): $msg"
+  exit 1
+fi
+
+if ! printf '%s' "$payload" | jq -e . >/dev/null 2>&1; then
+  err "api returned a non-JSON response — check that GLEAN_BASE_URL points at the API host, not the web UI"
   exit 1
 fi
 
@@ -89,25 +95,28 @@ multi=false
 [ "${#IDS[@]}" -gt 1 ] && multi=true
 
 for id in "${IDS[@]}"; do
+  # per the glean spec, .documents[id] is the Document object directly (no wrapper);
+  # a not-found / no-access entry is {"error": "<reason string>"}
   entry=$(printf '%s' "$payload" | jq -c --arg id "$id" \
-    '.documents[$id] // {error: {errorCode: "MISSING", errorMessage: "no entry in response"}}')
-  if printf '%s' "$entry" | jq -e '.error' >/dev/null; then
-    err "$id: $(printf '%s' "$entry" | jq -r '.error.errorCode + " — " + .error.errorMessage')"
+    '.documents[$id] // {error: "no entry in response"}')
+  if printf '%s' "$entry" | jq -e 'has("error")' >/dev/null; then
+    reason=$(printf '%s' "$entry" | jq -r '.error | if type == "string" then . else tostring end')
+    err "$id: $reason"
     failures=$((failures + 1))
     continue
   fi
   if [ "$FORMAT" = json ]; then
-    printf '%s' "$entry" | jq -c '.document | {
+    printf '%s' "$entry" | jq -c '{
       id, title, url,
       datasource: (.datasource // .metadata.datasource // ""),
       text: ((.content.fullTextList // []) | join("\n"))
     }'
   else
     if [ "$multi" = true ]; then
-      title=$(printf '%s' "$entry" | jq -r '.document.title // ""')
+      title=$(printf '%s' "$entry" | jq -r '.title // ""')
       printf '=== %s %s ===\n' "$id" "$title"
     fi
-    printf '%s' "$entry" | jq -r '(.document.content.fullTextList // []) | join("\n")'
+    printf '%s' "$entry" | jq -r '(.content.fullTextList // []) | join("\n")'
   fi
 done
 

@@ -2,7 +2,7 @@
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
 # search sentry issues across the org with curl + jq: build the query with -G --data-urlencode,
-# resolve project slugs to numeric ids (a raw slug is silently ignored by the api), follow the
+# resolve project slugs to numeric ids for robustness across older self-hosted versions, follow the
 # link-header cursor through every page, surface the {"detail":...} error body, and emit tsv or
 # jsonl. generic to any sentry install — everything instance-specific comes from env vars
 # or flags.
@@ -17,9 +17,9 @@ usage:
   sentry_issues.sh [options]                               # defaults to "is:unresolved"
 
 options:
-  --project VALUE      scope to a project; numeric id or slug (slugs are looked up for you —
-                       the api silently ignores a raw slug). repeatable.
-  --sort FIELD         date | new | freq | user | trends | inbox
+  --project VALUE      scope to a project; numeric id or slug (slugs are resolved to ids for
+                       robustness across older self-hosted versions). repeatable.
+  --sort FIELD         date | new | freq | user | trends | inbox | recommended
   --period PERIOD      statsPeriod, e.g. 24h, 7d, 14d
   --environment NAME   scope to an environment. repeatable.
   --limit N            stop after N issues total (default 100; 0 = fetch everything)
@@ -73,8 +73,8 @@ while [ $# -gt 0 ]; do
       PROJECT_RAW+=("$2"); shift 2 ;;
     --sort)
       case "${2:-}" in
-        date|new|freq|user|trends|inbox) SORT="$2"; shift 2 ;;
-        *) err "--sort must be one of: date new freq user trends inbox"; exit 1 ;;
+        date|new|freq|user|trends|inbox|recommended) SORT="$2"; shift 2 ;;
+        *) err "--sort must be one of: date new freq user trends inbox recommended"; exit 1 ;;
       esac ;;
     --period)
       [ -n "${2:-}" ] || { err "--period needs a value like 24h or 14d"; exit 1; }
@@ -118,7 +118,7 @@ sentry_check_error() {
 HDR="$(mktemp)"
 trap 'rm -f "$HDR"' EXIT
 
-# resolve any non-numeric --project values (slugs) to numeric ids — the api needs the id
+# resolve any non-numeric --project values (slugs) to numeric ids for robustness
 PROJECT_IDS=()
 for raw in "${PROJECT_RAW[@]+"${PROJECT_RAW[@]}"}"; do
   case "$raw" in

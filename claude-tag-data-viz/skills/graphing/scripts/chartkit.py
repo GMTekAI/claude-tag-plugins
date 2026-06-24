@@ -170,7 +170,9 @@ def theme(bg=DEFAULT_BG, font=None):
     c.muted = muted
     c.spine = spine
     c.grid = grid
-    c.series = list(SERIES)
+    # the default series is tuned for the light background; on a dark bg, lift
+    # each color toward the light anchor so lines stay readable
+    c.series = [mix(s, anchor, 0.35) for s in SERIES] if dark else list(SERIES)
     c.accent = c.series[0]
     c.secondary = c.series[1]
     c.font_css = font_css
@@ -179,10 +181,11 @@ def theme(bg=DEFAULT_BG, font=None):
 
 
 def palette(n, base=None):
-    """Return n colors. base=None cycles the default series, base=hex builds a
-    ramp from that color, base=list cycles the list."""
+    """Return n colors. base=None cycles the active theme's series (dark-adjusted
+    when the theme is dark), base=hex builds a ramp from that color, base=list
+    cycles the list."""
     if base is None:
-        src = SERIES
+        src = _active.series if _active else SERIES
     elif isinstance(base, (list, tuple)):
         src = list(base)
     else:
@@ -238,33 +241,46 @@ def save(fig, stem, formats=("png",), dpi=220):
 
 
 def _find_third_party_dir():
-    here = os.path.dirname(os.path.abspath(__file__))
-    for cand in (
-        os.path.join(here, "..", "..", "third_party"),
-        os.path.join(here, "..", "third_party"),
-        os.path.join(here, "third_party"),
-        os.path.join(os.getcwd(), "third_party"),
+    # explicit override first; otherwise walk up from this file toward the repo
+    # root looking for a third_party/ that carries every vendor bundle
+    override = os.environ.get("CHARTKIT_THIRD_PARTY")
+    if override and all(
+        os.path.isfile(os.path.join(override, f)) for f in VENDOR_FILES
     ):
-        cand = os.path.normpath(cand)
+        return override
+    here = os.path.dirname(os.path.abspath(__file__))
+    seen = set()
+    while here and here not in seen:
+        seen.add(here)
+        cand = os.path.join(here, "third_party")
         if all(os.path.isfile(os.path.join(cand, f)) for f in VENDOR_FILES):
             return cand
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    cand = os.path.join(os.getcwd(), "third_party")
+    if all(os.path.isfile(os.path.join(cand, f)) for f in VENDOR_FILES):
+        return cand
     return None
 
 
 def _vendor_scripts():
     root = _find_third_party_dir()
-    if root:
-        parts = []
-        for f in VENDOR_FILES:
-            with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
-                parts.append(f"<!-- {f} -->\n<script>\n{fh.read()}\n</script>")
-        return "\n".join(parts), True
-    tags = "\n".join(f'<script src="./third_party/{f}"></script>' for f in VENDOR_FILES)
-    note = (
-        "<!-- third_party/ not found: place the four UMD bundles next to this "
-        "file for offline rendering -->\n"
-    )
-    return note + tags, False
+    if not root:
+        # fail loudly: a page without these bundles renders blank, and the
+        # docstring promises a self-contained file
+        raise FileNotFoundError(
+            "chartkit.write_html: could not locate the vendored React/Recharts "
+            "bundles under any third_party/ ancestor of "
+            f"{os.path.abspath(__file__)!r}. Set CHARTKIT_THIRD_PARTY to the "
+            "directory that holds " + ", ".join(VENDOR_FILES)
+        )
+    parts = []
+    for f in VENDOR_FILES:
+        with open(os.path.join(root, f), "r", encoding="utf-8") as fh:
+            parts.append(f"<!-- {f} -->\n<script>\n{fh.read()}\n</script>")
+    return "\n".join(parts), True
 
 
 # characters with no structural meaning inside a css declaration block; a value
@@ -336,6 +352,8 @@ def zero_fill_days(pairs):
     agg = {}
     for d, v in pairs:
         agg[d] = agg.get(d, 0.0) + v
+    if not agg:
+        return [], []
     lo, hi = min(agg), max(agg)
     days = [lo + dt.timedelta(days=i) for i in range((hi - lo).days + 1)]
     return days, [agg.get(d, 0.0) for d in days]

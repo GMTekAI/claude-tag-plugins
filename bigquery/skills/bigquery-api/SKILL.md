@@ -1,6 +1,6 @@
 ---
 name: bigquery-api
-description: Run SQL against Google BigQuery and browse its catalog — submit queries (sync or async), poll job status, page through results, list datasets/tables, and read table schemas. Use this whenever the user wants to query a BigQuery table, ask "what's in this dataset", check a BigQuery job's status, or mentions bigquery.googleapis.com or a `project.dataset.table` path.
+description: Run SQL against Google BigQuery and browse its catalog — submit queries (sync or async), poll job status, page through results, list datasets/tables, and read table schemas. Use this whenever the user wants to query a BigQuery table, ask "what's in this dataset", check a BigQuery job's status, or mentions bigquery.googleapis.com or a `project.dataset.table` path. Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 BigQuery's REST API (`bigquery.googleapis.com/bigquery/v2`) lets you run SQL, inspect jobs, and browse datasets and table schemas with plain `curl` — no SDK required.
@@ -44,7 +44,8 @@ bq_curl "${BQ}/datasets?maxResults=1" | jq .
 
 Run SQL through the bundled script (path is relative to this skill's directory): it submits the
 query, polls until done with `location` threaded through, pages through every result page, and
-decodes the `f`/`v` cell encoding.
+decodes the `f`/`v` cell encoding for scalar columns (nested/repeated columns are emitted as raw
+`f`/`v` JSON — post-process with `jq` if you need them flattened).
 
 ```bash
 scripts/bq_query.sh \
@@ -152,7 +153,7 @@ bq_curl "${BQ}/datasets/${DATASET}/tables/${TABLE}/data?maxResults=10" \
 
 ## Pagination
 
-Every list-style endpoint uses the same scheme: the response carries a token when there's more, and you pass it back as `?pageToken=` on the next call. Stop when the field is absent. `maxResults` caps a single page (API max varies per endpoint; ~1000 for rows).
+Every list-style endpoint uses the same scheme: the response carries a token when there's more, and you pass it back as `?pageToken=` on the next call. Stop when the field is absent. `maxResults` caps a single page; the actual API ceilings are size-based (~10 MB per `tabledata.list` page, ~20 MB per `getQueryResults` page) rather than a fixed row count — the bundled script defaults to 1000 rows per page.
 
 The response field name is not uniform — check which one your endpoint returns:
 

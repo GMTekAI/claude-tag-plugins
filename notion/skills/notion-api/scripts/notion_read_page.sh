@@ -34,7 +34,7 @@ output:
   count and any truncation warning go to stderr.
 
 exit codes:
-  0 success    1 request failed, api error, or bad arguments
+  0 success; non-zero on failure (1 = api/argument error, other = curl transport error)
 EOF
 }
 

@@ -34,7 +34,7 @@ options:
 
 environment:
   ASANA_TOKEN     bearer token; injected by the runtime, so the placeholder default is fine
-  ASANA_BASE_URL  api root override (default https://app.asana.com/api/1.0)
+  ASANA_BASE      api root override (default https://app.asana.com/api/1.0); ASANA_BASE_URL also works
 
 output:
   tasks on stdout — tsv with header (gid, name, completed, assignee, due_on, permalink_url) by
@@ -51,7 +51,7 @@ err() { printf '%s\n' "$*" >&2; }
 command -v curl >/dev/null || { err "curl is required"; exit 1; }
 command -v jq >/dev/null || { err "jq is required"; exit 1; }
 
-BASE_URL="${ASANA_BASE_URL:-https://app.asana.com/api/1.0}"
+BASE_URL="${ASANA_BASE_URL:-${ASANA_BASE:-https://app.asana.com/api/1.0}}"
 TOKEN="${ASANA_TOKEN:-placeholder}"
 PROJECT=""
 TAG=""
@@ -168,10 +168,6 @@ QARGS+=(--data-urlencode "opt_fields=${FIELDS}" --data-urlencode "limit=${PAGE_S
 
 URL="${BASE_URL}/tasks"
 
-if [ "$FORMAT" = "tsv" ]; then
-  printf 'gid\tname\tcompleted\tassignee\tdue_on\tpermalink_url\n'
-fi
-
 # tsv cell rule: null -> "", nested -> json, else string (so completed=false stays "false")
 read -r -d '' CELL <<'JQ' || true
 def cell: if . == null then "" elif type=="object" or type=="array" then tojson else tostring end;
@@ -191,6 +187,7 @@ print_page() {
 
 OFFSET=""
 FETCHED=0
+HEADER_DONE=0
 
 while :; do
   if [ -n "$OFFSET" ]; then
@@ -199,6 +196,11 @@ while :; do
     PAGE="$(asana_api "$URL" "${QARGS[@]}")"
   fi
   asana_check_error "$PAGE"
+
+  if [ "$FORMAT" = "tsv" ] && [ "$HEADER_DONE" -eq 0 ]; then
+    printf 'gid\tname\tcompleted\tassignee\tdue_on\tpermalink_url\n'
+    HEADER_DONE=1
+  fi
 
   COUNT="$(jq -r '.data | length' <<<"$PAGE")"
   TAKE="$COUNT"

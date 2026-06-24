@@ -1,6 +1,6 @@
 ---
 name: hubspot-api
-description: Read, create, update, search, and associate HubSpot CRM records — contacts, companies, deals, tickets, and custom objects. Use this whenever the user wants to look up a contact, create a deal, update a company, search the CRM, link two records, or asks "what's in HubSpot" — even if they don't say "API". Also use it for any URL under app.hubspot.com or a mention of a HubSpot object/record ID.
+description: Read, create, update, search, and associate HubSpot CRM records — contacts, companies, deals, tickets, and custom objects. Use this whenever the user wants to look up a contact, create a deal, update a company, search the CRM, link two records, or asks "what's in HubSpot" — even if they don't say "API". Also use it for any URL under app.hubspot.com or a mention of a HubSpot object/record ID. Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 HubSpot's CRM API (v3) is uniform across object types: every object lives under `https://api.hubapi.com/crm/v3/objects/{objectType}` and supports the same basic/search/batch/association operations.
@@ -164,9 +164,10 @@ scripts/hs_search.sh --object contacts \
 - `--object TYPE` (required) is `contacts`, `companies`, `deals`, `tickets`, or any object type
   name / `objectTypeId`. Instance specifics come from `HUBSPOT_ACCESS_TOKEN` above.
 - `--filter PROP:OP:VALUE` (repeatable) ANDs filters in one `filterGroup`. `OP` is uppercased;
-  `IN` / `NOT_IN` take a comma list (`dealstage:IN:won,lost` → `values`), `BETWEEN` takes
-  `low,high` (`amount:BETWEEN:100,500` → `value` + `highValue`), `HAS_PROPERTY` /
-  `NOT_HAS_PROPERTY` take no value. `--query TEXT` adds a free-text phrase match.
+  `IN` / `NOT_IN` take a comma list (`dealstage:IN:won,lost` → `values`; for string properties
+  the values must be lowercase), `BETWEEN` takes `low,high` (`amount:BETWEEN:100,500` → `value` +
+  `highValue`), `HAS_PROPERTY` / `NOT_HAS_PROPERTY` take no value. `--query TEXT` adds a free-text
+  phrase match.
 - `--properties LIST` drives both the request and the TSV columns; defaults are per-type
   (`email,firstname,lastname,createdate` for contacts, etc.) and required for any other type.
   `--sort PROP[:desc]` orders results.
@@ -267,8 +268,8 @@ X-HubSpot-RateLimit-Interval-Milliseconds   interval length
 X-HubSpot-RateLimit-Daily / -Daily-Remaining
 ```
 
-On `429`, read `Retry-After` (seconds) or `X-HubSpot-RateLimit-Interval-Milliseconds`, sleep, and
-retry. Prefer batch endpoints — one batch call of 100 records counts as one request.
+On `429`, sleep for `X-HubSpot-RateLimit-Interval-Milliseconds` (or ~10s if absent) and retry.
+Prefer batch endpoints — one batch call of 100 records counts as one request.
 
 ## Error handling
 
@@ -281,7 +282,7 @@ projection prints nulls. Always surface `message` and `category`.
 - **`403` `MISSING_SCOPES`** — The configured credential lacks the scope for this endpoint. The message names the missing scope — report it.
 - **`404` `OBJECT_NOT_FOUND`** — Bad ID, wrong `objectType`, or record was deleted/archived. Try `archived=true`.
 - **`409` `CONFLICT`** — Duplicate on a unique key (e.g., creating a contact with an existing email). Switch to upsert or patch the existing record.
-- **`429` `RATE_LIMITS`** — The body's `policyName` says which limit you hit: a secondly/burst policy → sleep per `Retry-After`, retry; `DAILY` → stop, it resets at midnight account-local time.
+- **`429` `RATE_LIMITS`** — The body's `policyName` says which limit you hit: a secondly/burst policy → sleep per `X-HubSpot-RateLimit-Interval-Milliseconds`, retry; `DAILY` → stop, it resets at midnight account-local time.
 - **`5xx`** — Transient. Retry with backoff.
 
 ## Going deeper

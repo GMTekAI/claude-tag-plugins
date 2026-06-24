@@ -1,6 +1,6 @@
 ---
 name: asana-api
-description: Read and manage Asana tasks, projects, sections, comments, and workspaces. Use this whenever the user wants to list or search tasks, create or update a task, complete a task, comment on a task, move tasks between projects or sections, look up a project or workspace, or ask "what's on my Asana list" — even if they don't say "API". Also use it for any app.asana.com URL or an Asana task/project gid.
+description: Read and manage Asana tasks, projects, sections, comments, and workspaces. Use this whenever the user wants to list or search tasks, create or update a task, complete a task, comment on a task, move tasks between projects or sections, look up a project or workspace, or ask "what's on my Asana list" — even if they don't say "API". Also use it for any app.asana.com URL or an Asana task/project gid. Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 Asana's REST API is rooted at `https://app.asana.com/api/1.0`. Three things are true of every call:
@@ -243,7 +243,7 @@ Every error replaces `data` with `errors`: `{"errors": [{"message": "...", "help
 - **`401`** — Credential missing or rejected. Check `ASANA_TOKEN` is set at all (any value works). If it persists, the credential isn't configured for this workspace — report it.
 - **`402`** — Payment required: the feature needs a premium org (e.g. task search, some custom-field operations).
 - **`403`** — Forbidden: the token's user lacks access to that object.
-- **`404`** — Not found: wrong `gid`, or an object the user can't see — Asana returns `404`, not `403`, for those.
+- **`404`** — Not found: wrong `gid` or non-existent object; some private objects may also surface as `404` rather than `403`.
 - **`429`** — Rate limited. Sleep per `Retry-After`, then retry with backoff.
 - **`451`** — Unavailable for legal reasons (embargoed IP).
 - **`5xx`** — Asana-side. Retry reads with backoff; quote `errors[].phrase` if you escalate.

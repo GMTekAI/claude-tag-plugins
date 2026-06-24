@@ -34,7 +34,7 @@ output:
   nested values are emitted as json. totalSize and row counts go to stderr.
 
 exit codes:
-  0 success    1 request or query failed (errorCode and message on stderr)
+  0 success; non-zero on failure (1 = API/argument error, other = curl transport error)
 EOF
 }
 
@@ -148,6 +148,19 @@ def flat:
   | from_entries;
 JQ
 
+# derive the tsv column set from the soql SELECT clause so a null parent lookup
+# on page 1 can't freeze the header to the bare key (Account) and silently drop
+# the dotted column (Account.Name) for later pages. emits empty when the field
+# list isn't a plain comma-separated path list (aggregates, child subqueries,
+# FIELDS(ALL), TYPEOF) so the loop falls back to first-page flattened keys.
+soql_cols() {
+  printf '%s' "$1" | jq -Rsc '
+    gsub("[\\n\\t]"; " ")
+    | (capture("^\\s*select\\s+(?<f>.+?)\\s+from\\s"; "i")? // {}).f // ""
+    | split(",") | map(gsub("^\\s+|\\s+$"; ""))
+    | if length > 0 and all(test("^[A-Za-z][A-Za-z0-9_.]*$")) then . else empty end'
+}
+
 PAGE="$(sf_api -G "${INSTANCE_URL}/services/data/${API_VERSION}/${ENDPOINT}" \
   --data-urlencode "q=${SOQL}")"
 sf_check_error "$PAGE"
@@ -155,8 +168,9 @@ sf_check_error "$PAGE"
 TOTAL="$(jq -r '.totalSize // 0' <<<"$PAGE")"
 err "totalSize: ${TOTAL}"
 
-COLS=""
+COLS="$(soql_cols "$SOQL")"
 FETCHED=0
+HEADER=0
 
 while :; do
   COUNT="$(jq -r '.records | length' <<<"$PAGE")"
@@ -171,15 +185,20 @@ while :; do
       jq -c --argjson take "$TAKE" "${FLATTEN} .records[:\$take][] | flat" <<<"$PAGE"
     else
       if [ -z "$COLS" ]; then
-        # column set = first-seen order of flattened keys across the first page
+        # fallback: column set = first-seen order of flattened keys across the first page
         COLS="$(jq -c "${FLATTEN}"'
           reduce (.records[] | flat | keys_unsorted[]) as $k
             ([]; if index($k) then . else . + [$k] end)' <<<"$PAGE")"
-        jq -rn --argjson c "$COLS" '$c | @tsv'
       fi
+      if [ "$HEADER" -eq 0 ]; then
+        jq -rn --argjson c "$COLS" '$c | @tsv'
+        HEADER=1
+      fi
+      # row lookup is case-insensitive: COLS may carry the soql's casing while
+      # the api returns canonical field casing.
       jq -r --argjson take "$TAKE" --argjson cols "$COLS" "${FLATTEN}"'
-        .records[:$take][] | flat as $r
-        | [$cols[] | $r[.]
+        .records[:$take][] | flat | with_entries(.key |= ascii_downcase) as $r
+        | [$cols[] | $r[ascii_downcase]
            | if type == "object" or type == "array" then tojson
              elif . == null then "" else tostring end]
         | @tsv' <<<"$PAGE"

@@ -16,7 +16,7 @@ usage:
 options:
   --team KEY         filter to one team by key, e.g. ENG
   --state NAME       workflow state name, e.g. "In Progress"
-  --state-type TYPE  workflow state type: backlog unstarted started completed canceled triage
+  --state-type TYPE  workflow state type: backlog unstarted started completed canceled triage duplicate
   --assignee EMAIL   assignee email; pass "me" to mean the configured identity
   --label NAME       label name (matches issues with at least that label)
   --query TEXT       case-insensitive substring match over title and description
@@ -72,8 +72,8 @@ while [ $# -gt 0 ]; do
       STATE_NAME="$2"; shift 2 ;;
     --state-type)
       case "${2:-}" in
-        backlog|unstarted|started|completed|canceled|triage) STATE_TYPE="$2" ;;
-        *) err "--state-type must be one of: backlog unstarted started completed canceled triage"
+        backlog|unstarted|started|completed|canceled|triage|duplicate) STATE_TYPE="$2" ;;
+        *) err "--state-type must be one of: backlog unstarted started completed canceled triage duplicate"
            exit 1 ;;
       esac
       shift 2 ;;
@@ -172,13 +172,10 @@ query($filter: IssueFilter, $cursor: String, $first: Int) {
 }
 EOF
 
-if [ "$FORMAT" = "tsv" ]; then
-  printf 'identifier\ttitle\tstate\tassignee\tupdatedAt\turl\n'
-fi
-
 CURSOR=""
 FETCHED=0
 TRUNCATED=false
+HEADER_PRINTED=false
 
 while :; do
   BODY="$(jq -cn --arg q "$GQL" --argjson f "$FILTER" --argjson n "$PAGE_SIZE" --arg c "$CURSOR" \
@@ -186,6 +183,11 @@ while :; do
       cursor: (if $c == "" then null else $c end)}}')"
   PAGE="$(linear_api "$BODY")"
   linear_check_error "$PAGE"
+
+  if [ "$FORMAT" = "tsv" ] && [ "$HEADER_PRINTED" = "false" ]; then
+    printf 'identifier\ttitle\tstate\tassignee\tupdatedAt\turl\n'
+    HEADER_PRINTED=true
+  fi
 
   COUNT="$(jq -r '.data.issues.nodes | length' <<<"$PAGE")"
   TAKE="$COUNT"

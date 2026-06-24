@@ -132,7 +132,7 @@ sf_api() {
     "$@"
 }
 
-# fail with the api's own message if $1 isn't json or carries a non-202 progress / error envelope
+# fail if $1 isn't valid json (echo the raw body for debugging)
 sf_require_json() {
   if ! jq -e . >/dev/null 2>&1 <<<"$1"; then
     err "non-json response from the api:"

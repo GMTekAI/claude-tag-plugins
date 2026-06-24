@@ -9,7 +9,7 @@
 - Every organization has exactly one **org-level agent**. This is what a bare
   `@Claude` mention resolves to when no narrower agent scope matches.
 
-- A **agent scope** is an agent overlay bound to a specific Slack surface:
+- An **agent scope** is an agent overlay bound to a specific Slack surface:
   - A **workspace agent scope** applies to every channel in one Slack workspace.
   - A **channel agent scope** applies to exactly one channel.
 
@@ -33,9 +33,9 @@ along the chain in different ways:
 | Field | Behavior along the chain |
 |---|---|
 | Custom instructions | **Concatenated**, org → workspace → channel. A channel agent scope's instructions are *appended after* its parents', never replace them. |
-| Skills | **Union.** A agent scope can add skills but cannot remove a parent's. |
+| Skills | **Union.** An agent scope can add skills but cannot remove a parent's. |
 | Plugins | **Union.** Same as skills. |
-| Default GitHub repos | **First-non-empty.** A agent scope that sets *any* repos replaces the parent's list entirely. Leave empty to inherit. |
+| Default GitHub repos | **First-non-empty.** An agent scope that sets *any* repos replaces the parent's list entirely. Leave empty to inherit. |
 | Default environment | **First-non-empty.** |
 | Default model | **First-non-empty.** |
 | Identity profiles | Resolved separately — every profile bound to any scope in the chain applies (**additive union**). |

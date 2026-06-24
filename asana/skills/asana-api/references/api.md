@@ -124,7 +124,7 @@ Key task fields (request via `opt_fields`): `name`, `notes`, `html_notes`, `comp
 
 ## Batch API
 
-- **`POST /batch`** — Up to 10 sub-requests in one call. Body `data.actions[]`: each is `{relative_path, method, data?, options?}`, with `relative_path` rooted at `/api/1.0`. Returns an array of `{status_code, body, headers}` in request order. Counts as one request against the per-minute limit, but each action counts against cost limits.
+- **`POST /batch`** — Up to 10 sub-requests in one call. Body `data.actions[]`: each is `{relative_path, method, data?, options?}`, with `relative_path` rooted at `/api/1.0`. Returns an array of `{status_code, body, headers}` in request order. Each action counts as a separate request against the standard per-minute rate limiter and the concurrent request limiter (a 10-action batch consumes 10 requests); the whole batch returns `429` if any action would exceed limits.
 
 ## Audit log events
 

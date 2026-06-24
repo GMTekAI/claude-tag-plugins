@@ -204,7 +204,7 @@ Examples:
 
 ## Content conversion (v1)
 
-- **`POST /rest/api/contentbody/convert/async/{to}`** — Convert between body formats. `{to}` ∈ `storage`, `view`, `export_view`, `styled_view`, `editor`, `anonymous_export_view`. Body: `{"representation":"wiki"|"storage"|"editor","value":"..."}`. Returns `{"asyncId":"..."}`. The synchronous `/contentbody/convert/{to}` was removed in April 2025 — only the async form remains.
+- **`POST /rest/api/contentbody/convert/async/{to}`** — Convert between body formats. Supported conversions: `atlas_doc_format` → `editor`/`export_view`/`storage`/`styled_view`/`view`; `storage` → `atlas_doc_format`/`editor`/`export_view`/`styled_view`/`view`; `editor` → `storage`. Body: `{"representation":"atlas_doc_format"|"storage"|"editor","value":"..."}`. Returns `{"asyncId":"..."}`. The synchronous `/contentbody/convert/{to}` was removed in April 2025 — only the async form remains.
 - **`GET /rest/api/contentbody/convert/async/{id}`** — Poll the conversion. `status` ∈ `WORKING`/`QUEUED`/`RERUNNING`/`COMPLETED`/`FAILED`; the converted body is in `value` when `COMPLETED`. Bound the poll loop and stop on `FAILED` (the `error` field says why). Results are cached ~5 minutes.
 
 ## Storage format macros
@@ -287,7 +287,7 @@ keys (`ENG`) — v2 needs the numeric ID (look it up via `?keys=ENG`). v2 body f
 `jq -n '{representation:"atlas_doc_format", value: ($adf | tojson)}'`.
 
 **Titles are unique per space.** Creating a page with a title that already exists in the space
-returns `409`.
+returns `400` ("A page with this title already exists").
 
 **Version bumps are required on PUT.** Every PUT to pages, blog posts, comments, properties must
 carry `version.number` one greater than the current version. Forgetting this is the #1 source of

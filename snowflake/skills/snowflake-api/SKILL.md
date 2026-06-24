@@ -1,6 +1,6 @@
 ---
 name: snowflake-api
-description: Run SQL against Snowflake — submit statements, poll async handles, fetch result partitions, cancel, and browse warehouses/databases/schemas/tables. Use this whenever the user wants to query Snowflake, ask "what tables are in this schema", check a warehouse's status, or mentions `snowflakecomputing.com`, `/api/v2/statements`, or a Snowflake account identifier (like `xy12345.us-east-1`).
+description: Run SQL against Snowflake — submit statements, poll async handles, fetch result partitions, cancel, and browse warehouses/databases/schemas/tables. Use this whenever the user wants to query Snowflake, ask "what tables are in this schema", check a warehouse's status, or mentions `snowflakecomputing.com`, `/api/v2/statements`, or a Snowflake account identifier (like `xy12345.us-east-1`). Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 Snowflake's SQL API v2 (`/api/v2/statements`) is a thin REST layer for running SQL and fetching results.
@@ -216,8 +216,8 @@ Gotchas worth calling out:
   (Result metadata & partitions).
 - **Warehouse is required for anything that scans data.** Metadata-only statements (most `SHOW`
   commands, `DESCRIBE`) don't need one, but `SELECT` does. A missing warehouse fails with a clear
-  message. Queries on a suspended warehouse auto-resume it (startup delay), and each query bills a
-  minimum of ~60 s of warehouse time — batch small lookups where you can.
+  message. Queries on a suspended warehouse auto-resume it (startup delay), and each resume incurs a
+  60 s billing minimum (per warehouse start, not per query) — batch small lookups where you can.
 
 ## Going deeper
 

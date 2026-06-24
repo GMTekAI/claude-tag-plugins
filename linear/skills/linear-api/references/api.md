@@ -47,7 +47,8 @@ issues(
 ```
 
 Connections expose only `edges`, `nodes`, and `pageInfo` — there is **no `totalCount`** on any
-Linear connection type. To count, paginate and count `nodes`.
+Linear connection type. To count, paginate and count `nodes`. Exception: the search payloads
+(`searchIssues`, `searchProjects`, `searchDocuments`) do return `totalCount`.
 
 Mutations take an `input` object and return `{ success, lastSyncId, <object> }`. Always check
 `success`.
@@ -123,8 +124,8 @@ look it up per team via `team { states { nodes { id name type } } }`.
 
 - **`teams(filter, first)`** — List teams.
 - **`team(id)`** — By UUID **or key** (`team(id: "ENG")` works).
-- **`team { id key name description icon color visibility cyclesEnabled defaultIssueState triageEnabled }`** — Settings. (`private` has been removed from the schema — use `visibility`.)
-- **`team { states { nodes { id name type color position } } }`** — Workflow states. `type` ∈ `backlog`, `unstarted`, `started`, `completed`, `canceled`, `triage`.
+- **`team { id key name description icon color visibility cyclesEnabled defaultIssueState triageEnabled }`** — Settings. (`private` is deprecated — use `visibility`.)
+- **`team { states { nodes { id name type color position } } }`** — Workflow states. `type` ∈ `backlog`, `unstarted`, `started`, `completed`, `canceled`, `triage`, `duplicate`.
 - **`team { members { nodes } memberships { nodes } }`** — Team membership.
 - **`team { labels { nodes } }`** — Team-scoped labels.
 - **`team { activeCycle cycles(filter, first) }`** — Cycle accessors (`currentCycle` / `previousCycle` do not exist).
@@ -136,10 +137,10 @@ look it up per team via `team { states { nodes { id name type } } }`.
 
 - **`projects(filter, first)`** — List. `ProjectFilter` supports `status`, `health`, `lead`, `members`, `accessibleTeams`, date fields.
 - **`project(id)`** — One project.
-- **`project { id name description status { name type } health progress startDate targetDate completedAt url color icon lead members teams issues projectMilestones projectUpdates documents }`** — Key fields. `status.type` ∈ `backlog`, `planned`, `started`, `paused`, `completed`, `canceled`. `health` ∈ `onTrack`, `atRisk`, `offTrack`. The old string `state` field has been removed from the `Project` type — use `status`.
+- **`project { id name description status { name type } health progress startDate targetDate completedAt url color icon lead members teams issues projectMilestones projectUpdates documents }`** — Key fields. `status.type` ∈ `backlog`, `planned`, `started`, `paused`, `completed`, `canceled`. `health` ∈ `onTrack`, `atRisk`, `offTrack`. The old string `state` field is deprecated on the `Project` type — use `status`.
 - **`projectCreate(input: {name, teamIds, description, statusId, leadId, memberIds, startDate, targetDate})`** — Create.
 - **`projectUpdate(id, input)`** — Update.
-- **`projectDelete(id)` / `projectUnarchive(id)`** — Trash / restore (there is no `projectArchive`).
+- **`projectDelete(id)` / `projectUnarchive(id)`** — Trash / restore (`projectArchive` is deprecated — use `projectDelete`).
 - **`projectMilestone(id)` / `project { projectMilestones }`** — Milestones.
 - **`projectMilestoneCreate(input: {projectId, name, targetDate})`** — Create milestone.
 
