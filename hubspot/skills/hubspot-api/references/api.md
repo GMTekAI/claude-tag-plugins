@@ -49,9 +49,9 @@ AND/OR semantics, the 5/6/18 filter caps, the 10,000-result ceiling, and the eve
 caveat are in `../SKILL.md`, operation 6 (Search records).
 
 Filter operators: `EQ`, `NEQ`, `LT`, `LTE`, `GT`, `GTE`, `BETWEEN` (`value` + `highValue`), `IN` /
-`NOT_IN` (`values: [...]`, case-sensitive exact match), `HAS_PROPERTY`, `NOT_HAS_PROPERTY`,
-`CONTAINS_TOKEN` (whole-word; `*` wildcard prefix/suffix), `NOT_CONTAINS_TOKEN`. Date values are
-ISO-8601 or epoch millis.
+`NOT_IN` (`values: [...]` — for string properties the values **must be lowercase** or they silently
+match nothing), `HAS_PROPERTY`, `NOT_HAS_PROPERTY`, `CONTAINS_TOKEN` (whole-word; `*` wildcard
+prefix/suffix), `NOT_CONTAINS_TOKEN`. Date values are ISO-8601 or epoch millis.
 
 Default searchable properties for `query`: contacts → `firstname`, `lastname`, `email`, `phone`,
 `hs_additional_emails`, `fax`, `mobilephone`, `company`, `hs_marketable_until_renewal`; companies →
@@ -177,8 +177,8 @@ Lists (v3) group contacts/companies/etc. for marketing segmentation.
 - **`POST /crm/v3/lists/search`** — Find lists by name. Body: `{query, offset, count}`.
 - **`GET /crm/v3/lists/{listId}`** — List details.
 - **`GET /crm/v3/lists/{listId}/memberships`** — Record IDs in the list. Params: `limit`, `after`.
-- **`PUT /crm/v3/lists/{listId}/memberships/add`** — Body: `[recordId, ...]`. Manual lists only.
-- **`PUT /crm/v3/lists/{listId}/memberships/remove`** — Body: `[recordId, ...]`. Manual lists only.
+- **`PUT /crm/v3/lists/{listId}/memberships/add`** — Body: `[recordId, ...]`. MANUAL and SNAPSHOT lists only (not DYNAMIC).
+- **`PUT /crm/v3/lists/{listId}/memberships/remove`** — Body: `[recordId, ...]`. MANUAL and SNAPSHOT lists only (not DYNAMIC).
 
 ## Engagements
 

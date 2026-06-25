@@ -1,6 +1,6 @@
 ---
 name: linear-api
-description: Read and manage Linear issues, projects, cycles, teams, comments, and labels. Use this whenever the user wants to list their issues, search issues, create or update an issue, move an issue between states, add a comment, check a project or cycle, look up a team, or ask "what's on my plate in Linear" — even if they don't say "API" or "GraphQL". Also use it for any linear.app URL or an issue identifier like "ENG-123".
+description: Read and manage Linear issues, projects, cycles, teams, comments, and labels. Use this whenever the user wants to list their issues, search issues, create or update an issue, move an issue between states, add a comment, check a project or cycle, look up a team, or ask "what's on my plate in Linear" — even if they don't say "API" or "GraphQL". Also use it for any linear.app URL or an issue identifier like "ENG-123". Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 Linear has a **single GraphQL endpoint** — there is no REST API. Every read is a `query`, every
@@ -119,8 +119,8 @@ scripts/linear_issues.sh --team ENG --state-type started --assignee me --limit 1
 ```
 
 - All filter flags are optional and combine (AND): `--team KEY`, `--state NAME`, `--state-type
-  TYPE` (one of `backlog` `unstarted` `started` `completed` `canceled` `triage`), `--assignee
-  EMAIL` (or `me` — resolves the viewer id first), `--label NAME`. Instance specifics come from
+  TYPE` (one of `backlog` `unstarted` `started` `completed` `canceled` `triage` `duplicate`),
+  `--assignee EMAIL` (or `me` — resolves the viewer id first), `--label NAME`. Instance specifics come from
   `LINEAR_API_KEY` above.
 - `--query TEXT` does a case-insensitive substring match over title and description; combined with
   other flags it's wrapped as `and: [ {…flags}, {or: [title, description]} ]`.
@@ -211,7 +211,7 @@ linear_gql '{
 }' | jq '.data.teams.nodes'
 ```
 
-State `type` ∈ `backlog`, `unstarted`, `started`, `completed`, `canceled`, `triage`.
+State `type` ∈ `backlog`, `unstarted`, `started`, `completed`, `canceled`, `triage`, `duplicate`.
 
 ### 9. Projects and cycles
 
@@ -240,7 +240,8 @@ linear_gql 'query($teamId: String!) {
 ```
 
 Connections have no `totalCount` field — to count issues, paginate and count `nodes`, or read an
-aggregate field like `team { issueCount }`.
+aggregate field like `team { issueCount }`. Exception: the search payloads (`searchIssues`,
+`searchProjects`, `searchDocuments`) do return `totalCount`.
 
 ### 10. Recent activity across the workspace
 

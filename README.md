@@ -43,7 +43,7 @@ Once installed, skills activate automatically when relevant.
 
 ## How It Works
 
-Every plugin follows the same structure:
+Each service plugin follows the same structure:
 
 ```
 <service>/
@@ -53,6 +53,11 @@ Every plugin follows the same structure:
     ├── references/              # Full endpoint catalog, read on demand
     └── scripts/                 # Executable helpers (where present)
 ```
+
+The two helper plugins use the same `skills/<name>/` layout but carry different
+content: [`claude-tag-data-viz`](./claude-tag-data-viz) ships a Python charting
+kit instead of curl scripts, and [`claude-tag-troubleshoot`](./claude-tag-troubleshoot)
+ships a slash command plus two documentation-only skills.
 
 ## Authentication
 

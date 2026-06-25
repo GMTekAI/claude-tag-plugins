@@ -1,6 +1,6 @@
 ---
 name: salesforce-api
-description: Query, read, create, update, and describe Salesforce records — Accounts, Contacts, Opportunities, Leads, Cases, and custom objects. Use this whenever the user wants to look up a Salesforce record, run a SOQL query, update an Opportunity, check an object's fields, or asks "what's in Salesforce" — even if they don't say "API". Also use it for any URL under *.salesforce.com / *.lightning.force.com or a mention of a Salesforce record ID or SOQL.
+description: Query, read, create, update, and describe Salesforce records — Accounts, Contacts, Opportunities, Leads, Cases, and custom objects. Use this whenever the user wants to look up a Salesforce record, run a SOQL query, update an Opportunity, check an object's fields, or asks "what's in Salesforce" — even if they don't say "API". Also use it for any URL under *.salesforce.com / *.lightning.force.com or a mention of a Salesforce record ID or SOQL. Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 In Salesforce, every org has its own **instance URL** (its My Domain), and the API is versioned in the path:
@@ -73,7 +73,7 @@ scripts/sf_query.sh \
 - `--max-rows N` caps fetched rows (default 10000, `0` = everything); `--batch-size N` (200–2000)
   sets the `Sforce-Query-Options` page size; `--json` emits one JSON object per row instead of TSV
   with a header. `totalSize` and row counts go to stderr.
-- Exit codes: `0` success, `1` request or query failed (`errorCode` and message on stderr).
+- Exit codes: `0` success; non-zero on failure (`1` = API/argument error with `errorCode` on stderr, other = curl transport error).
 
 If the script errors, read it — it's plain `curl` + `jq` — and debug against `references/api.md`.
 SOSL search, sObject writes, Describe, Composite, and Bulk API 2.0 are separate endpoints
@@ -81,8 +81,9 @@ SOSL search, sObject writes, Describe, Composite, and Bulk API 2.0 are separate 
 
 ### 2. Full-text search (SOSL)
 
-`GET ${SF_API}/search` with `--data-urlencode "q=FIND {Acme} IN NAME FIELDS RETURNING Account(Id,
-Name), Contact(Id, Name, Email)"` → results under `.searchRecords`. Or
+`salesforce_api -G "${SF_API}/search" --data-urlencode "q=FIND {Acme} IN NAME FIELDS RETURNING
+Account(Id, Name), Contact(Id, Name, Email)"` → results under `.searchRecords` (`-G` keeps
+`--data-urlencode` a GET; without it curl POSTs and `/search` rejects it). Or
 `GET /parameterizedSearch?q=Acme&sobject=Account&Account.fields=Id,Name`.
 
 ### 3. Read / create / update / delete one record

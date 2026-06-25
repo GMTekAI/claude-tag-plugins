@@ -173,8 +173,8 @@ From `GET /limits` (all return `{Max, Remaining}`): `DailyApiRequests`, `DailyBu
 `DailyBulkV2QueryJobs`, `DailyAsyncApexExecutions`, `DailyStreamingApiEvents`,
 `HourlyTimeBasedWorkflow`, `DataStorageMB`, `FileStorageMB`, `SingleEmail`, `MassEmail`, and more.
 
-Other hard limits that matter for API work: SOQL query length ≤ 100,000 characters, URI length ≤
-16,384 bytes (the encoded `q` param counts — for very long SOQL use a Bulk API 2.0 query job, which
+Other hard limits that matter for API work: SOQL query length ≤ 100,000 characters, URI plus headers
+≤ 16,384 bytes (the encoded `q` param counts — for very long SOQL use a Bulk API 2.0 query job, which
 takes the SOQL in the POST body), `OFFSET` ≤ 2000, `LIMIT` on `FIELDS(ALL)` / `FIELDS(CUSTOM)`
 queries ≤ 200, subquery nesting up to 5 levels (was 1 on older API versions), parent traversal 5
 levels, Composite subrequests ≤ 25 (of

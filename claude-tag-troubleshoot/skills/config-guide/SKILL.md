@@ -12,6 +12,8 @@ admin settings: **agents**, **agent scopes**, **identity profiles**, and the
 **presets / connections / repos / instructions** attached to them. The
 layering decides what any given session can see and do.
 
+This guide is currently written for the **Slack** surface.
+
 This skill is an **index**. Read the relevant reference file below for the
 topic the user is asking about — each is short and self-contained.
 

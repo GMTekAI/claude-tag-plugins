@@ -19,7 +19,8 @@ options:
   --query TEXT           free-text phrase matched across the type's default searchable properties
   --filter PROP:OP:VAL   property filter, repeatable; all filters are ANDed in one filterGroup.
                          OP is uppercased. IN / NOT_IN take a comma list (PROP:IN:v1,v2,...)
-                         and map to a values array; BETWEEN takes PROP:BETWEEN:low,high and
+                         and map to a values array — for string properties the values must be
+                         lowercase; BETWEEN takes PROP:BETWEEN:low,high and
                          maps to value + highValue; HAS_PROPERTY / NOT_HAS_PROPERTY take no
                          value; every other operator takes a single value.
   --properties LIST      comma-separated property names to request and emit as tsv columns.
@@ -206,12 +207,8 @@ build_body() {
      + (if $q != "" then {query: $q} else {} end)
      + (if ($filters | length) > 0 then {filterGroups: [{filters: $filters}]} else {} end)
      + (if ($sorts | length) > 0 then {sorts: $sorts} else {} end)
-     + (if $after != "" then {after: $after} else {} end)'
+     + (if $after != "" then {after: ($after | tonumber? // $after)} else {} end)'
 }
-
-if [ "$FORMAT" = "tsv" ]; then
-  jq -rn --argjson p "$PROPS_JSON" '["id"] + $p | @tsv'
-fi
 
 print_page() {
   if [ "$FORMAT" = "tsv" ]; then
@@ -240,6 +237,9 @@ while :; do
   if [ -z "$TOTAL" ]; then
     TOTAL="$(jq -r '.total // 0' <<<"$PAGE")"
     err "total: ${TOTAL}"
+    if [ "$FORMAT" = "tsv" ]; then
+      jq -rn --argjson p "$PROPS_JSON" '["id"] + $p | @tsv'
+    fi
   fi
 
   COUNT="$(jq -r '[.results[]?] | length' <<<"$PAGE")"

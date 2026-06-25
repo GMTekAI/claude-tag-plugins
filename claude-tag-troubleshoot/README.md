@@ -25,7 +25,7 @@ It does two things:
 
 | Command | Purpose |
 |---|---|
-| `/debug-plugins` | Runs the `debug-plugins` skill against the current session and reports findings with specific fixes. |
+| `/claude-tag-troubleshoot:debug-plugins` (short form: `/debug-plugins`) | Runs the `debug-plugins` skill against the current session and reports findings with specific fixes. |
 
 ## License
 

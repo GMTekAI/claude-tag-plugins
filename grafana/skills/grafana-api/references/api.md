@@ -58,7 +58,7 @@ Alertmanager, or the datasource UID of an external one.
 - **`DELETE /api/dashboards/uid/{uid}`** — Delete.
 - **`GET /api/dashboards/uid/{uid}/versions`** — Version history. Params: `limit`, `start`.
 - **`GET /api/dashboards/uid/{uid}/versions/{ver}`** — A specific version's full JSON.
-- **`POST /api/dashboards/uid/{uid}/restore`** — Body: `{"version": N}`.
+- **`POST /api/dashboards/uid/{uid}/restore`** — Body: `{"version": N}`. (Not on the public Dashboard Versions docs page; present in Grafana source.)
 - **`GET /api/dashboards/home`** — The org's home dashboard (returns `{"redirectUri": ...}` if one is set).
 - **`GET /api/dashboards/tags`** — All tags with counts.
 - **`GET/POST /api/dashboards/uid/{uid}/permissions`** — View/set folder- and dashboard-level ACLs.

@@ -18,8 +18,8 @@ many places.
 
 ## Scopes and binding
 
-Profiles are **bound to scopes**: organization, environment, account, or a
-specific agent scope.
+Profiles are **bound to scopes**: the organization, a workspace agent scope,
+or a channel agent scope.
 
 - One profile can be bound to many scopes.
 - One scope can have many profiles bound to it.
@@ -32,8 +32,8 @@ channel agent scope cannot remove something an org-level profile already granted
 
 Rules are ordered allow/deny entries for outbound network access, matched on
 host, path, and port. When several profiles apply to the same session their
-rules are **merged by tier, then by priority**; the first matching rule wins for
-each request.
+rules are **merged into a single ordered list**; the first matching rule wins
+for each request.
 
 ## Credentials
 

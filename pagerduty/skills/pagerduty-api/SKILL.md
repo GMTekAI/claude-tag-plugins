@@ -1,6 +1,6 @@
 ---
 name: pagerduty-api
-description: Query and manage PagerDuty — find out who's on call, list and manage incidents, read escalation policies and schedules, trace who got paged and why, acknowledge/resolve/snooze/escalate incidents, and create or update services. Use this whenever the user mentions PagerDuty, on-call, paging, escalation, an incident ID like `PXXXXXX` or `Q...`, asks "who's on call", "page the on-call", "ack this incident", "why wasn't I paged", or pastes a pagerduty.com URL — even if they don't say "API".
+description: Query and manage PagerDuty — find out who's on call, list and manage incidents, read escalation policies and schedules, trace who got paged and why, acknowledge/resolve/snooze/escalate incidents, and create or update services. Use this whenever the user mentions PagerDuty, on-call, paging, escalation, an incident ID like `PXXXXXX` or `Q...`, asks "who's on call", "page the on-call", "ack this incident", "why wasn't I paged", or pastes a pagerduty.com URL — even if they don't say "API". Always start from this skill when interacting with this service — its bundled scripts and recipes are the fastest path.
 ---
 
 PagerDuty exposes two distinct APIs:
@@ -56,8 +56,8 @@ pagerduty() { curl -sS -g "$@" -H "Authorization: Token token=${PAGERDUTY_TOKEN}
   -H "Accept: application/vnd.pagerduty+json;version=2" -H "Content-Type: application/json"; }
 ```
 
-The `-g` matters: PagerDuty's array params use brackets (`statuses[]=triggered`), which curl
-otherwise glob-expands and fails on — see Pagination.
+The `-g` matters: PagerDuty's array params use brackets (`statuses[]=triggered`), which older curl
+glob-expands and fails on — see Pagination.
 
 **Response codes & bodies** — applies to every recipe below:
 
@@ -164,6 +164,7 @@ pagerduty "https://api.pagerduty.com/escalation_policies/<policy_id>" | \
   jq '.escalation_policy.escalation_rules[]? | {delay_min: .escalation_delay_in_minutes, targets: [.targets[]? | {type, summary}]}'
 
 # schedule → rendered rotation for the next week (after overrides/layers)
+# GNU date; on BSD/macOS use: date -u -v+7d +%Y-%m-%dT%H:%M:%SZ
 pagerduty "https://api.pagerduty.com/schedules/<schedule_id>" -G \
   --data-urlencode "since=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   --data-urlencode "until=$(date -u -d '+7 days' +%Y-%m-%dT%H:%M:%SZ)" | \
@@ -223,8 +224,9 @@ response has `more: true`, incrementing `offset` by `limit`. **`offset + limit` 
 (set to the previous response's `last`).
 
 **curl globbing trap.** Array params use bracket syntax — `statuses[]=`, `service_ids[]=`,
-`team_ids[]=`, `include[]=`. curl treats `[` `]` as glob characters and fails with `curl: (3) bad
-range`. Either pass `-g`/`--globoff` (the helper does) or `-G --data-urlencode 'statuses[]=...'`.
+`team_ids[]=`, `include[]=`. Older curl treats `[` `]` as glob characters and errors with
+`curl: (3) bad range`; modern curl sends them literally. Always pass `-g`/`--globoff` (the helper
+does) or percent-encode the brackets via `-G --data-urlencode 'statuses[]=...'` to be safe.
 
 ## Rate limits
 

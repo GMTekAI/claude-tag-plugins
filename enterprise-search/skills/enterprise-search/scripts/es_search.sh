@@ -92,7 +92,6 @@ BASE_URL="${BASE_URL%/}"
 fetched=0
 cursor=""
 search_token=""
-[ "$FORMAT" = tsv ] && printf 'rank\ttitle\turl\tdatasource\tdoc_id\tsnippet\n'
 
 while :; do
   remaining=$((LIMIT - fetched))
@@ -120,9 +119,19 @@ while :; do
 
   if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
     msg=$(printf '%s' "$payload" \
-      | jq -r '.detail // .errorMessage // .' 2>/dev/null || printf '%s' "$payload")
+      | jq -r '.errorMessages[0].errorMessage // .detail // .errorMessage // .' 2>/dev/null \
+      || printf '%s' "$payload")
     err "api error (http $status): $msg"
     exit 1
+  fi
+
+  if ! printf '%s' "$payload" | jq -e . >/dev/null 2>&1; then
+    err "api returned a non-JSON response — check that GLEAN_BASE_URL points at the API host, not the web UI"
+    exit 1
+  fi
+
+  if [ "$fetched" -eq 0 ] && [ "$FORMAT" = tsv ]; then
+    printf 'rank\ttitle\turl\tdatasource\tdoc_id\tsnippet\n'
   fi
 
   if [ -z "$search_token" ]; then
@@ -141,7 +150,8 @@ while :; do
         url: .value.url,
         datasource: (.value.document.datasource // ""),
         doc_id: (.value.document.id // ""),
-        snippet: (.value.snippets[0].snippet // .value.snippets[0].text // ""),
+        snippet: (.value.snippets[0].text // .value.snippets[0].snippet // ""
+                  | gsub("[\ue006\ue007]"; "")),
         trackingToken: .value.trackingToken
       }'
   else
@@ -152,7 +162,8 @@ while :; do
         (.value.url // ""),
         (.value.document.datasource // ""),
         (.value.document.id // ""),
-        (.value.snippets[0].snippet // .value.snippets[0].text // "" | gsub("[\t\n]"; " "))
+        (.value.snippets[0].text // .value.snippets[0].snippet // ""
+          | gsub("[\ue006\ue007]"; "") | gsub("[\t\n]"; " "))
       ] | @tsv'
   fi
 

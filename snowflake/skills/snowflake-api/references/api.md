@@ -108,8 +108,8 @@ like "Asynchronous execution in progress."
 - `date`: integer days since epoch as a string (`"18262"`).
 - `time` / `timestamp_ltz` / `timestamp_ntz`: seconds since epoch (or midnight, for `time`) with 9
   decimal places (`"82919.000000000"`).
-- `timestamp_tz`: same, followed by a space and the timezone offset in minutes
-  (`"1616173619.000000000 1500"`).
+- `timestamp_tz`: same, followed by a space and an encoded timezone offset — subtract 1440 to get
+  the offset in minutes (`"1616173619.000000000 1500"` → offset 60, i.e. `+0100`).
 - `variant`/`object`/`array`: a JSON string you can parse with another `jq` pass.
 - NULL: `null` (or the string `"null"` if you set `nullable=false`).
 
@@ -179,9 +179,10 @@ and the only way to reproduce the result is to re-run the SQL.
 **Case sensitivity.** Unquoted identifiers are uppercased. `"my_table"` (quoted, lowercase) is a
 different object from `my_table` / `MY_TABLE`. If a table "doesn't exist," check quoting first.
 
-**Warehouse billing.** Every query on a running warehouse is billed for at least 60 seconds of that
-warehouse's size. A suspended warehouse auto-resumes on the first query and auto-suspends after
-idle. Prefer `XSMALL` for metadata / small scans.
+**Warehouse billing.** Per-second while a warehouse is running, with a 60-second minimum each time
+the warehouse starts or resumes (auto-resume from suspended counts). Queries on an already-running
+warehouse do not each incur a 60-second minimum. A suspended warehouse auto-resumes on the first
+query and auto-suspends after idle. Prefer `XSMALL` for metadata / small scans.
 
 **`422` ≠ "bad request."** Snowflake uses `422 Unprocessable Entity` for *SQL-level* failures
 (syntax error, object not found, permission denied on a table) — the HTTP request was well-formed

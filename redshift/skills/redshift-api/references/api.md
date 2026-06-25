@@ -186,7 +186,7 @@ parameter — use a literal `NULL` in the SQL.
 ]
 ```
 
-Parameter names are case-sensitive and must match `[a-zA-Z][a-zA-Z0-9_]*`.
+Parameter names are case-sensitive and must match `[0-9a-zA-Z_]+`.
 
 ## ColumnMetadata
 
@@ -207,9 +207,9 @@ Parameter names are case-sensitive and must match `[a-zA-Z][a-zA-Z0-9_]*`.
 
 Each cell in `Records[]` is a single-key object whose key tells you the JSON type:
 
-- **`stringValue`** (string) — varchar, char, text, date, timestamp, numeric (when it won't fit a double), super
+- **`stringValue`** (string) — varchar, char, text, date, timestamp, numeric, super
 - **`longValue`** (number (int)) — int2, int4, int8
-- **`doubleValue`** (number (float)) — float4, float8, small numerics
+- **`doubleValue`** (number (float)) — float4, float8
 - **`booleanValue`** (boolean) — bool
 - **`blobValue`** (string (base64)) — varbyte
 - **`isNull`** (`true`) — any NULL

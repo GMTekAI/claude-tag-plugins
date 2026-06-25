@@ -136,6 +136,10 @@ wrong location returns `404 notFound`, which is misleading.
 `"1.7234567e9"`, repeated fields are `{"v": [{"v": ...}]}`, and structs nest as
 `{"v": {"f": [...]}}`. Parse with the schema, not by eyeballing.
 
+**Destructive operations.** Dataset/table/routine/model `DELETE` and `WRITE_TRUNCATE` are
+irreversible — confirm the fully-qualified target (and prefer a `dryRun` or `SELECT` first) before
+issuing them.
+
 **Idempotency.** `jobs.insert` is idempotent *if you supply `jobReference.jobId`* — retrying with
 the same ID returns the existing job instead of creating a duplicate. `jobs.query` and `insertAll`
 are not idempotent; `insertAll` supports per-row `insertId` for best-effort dedup.

@@ -37,6 +37,7 @@ environment:
   CONFLUENCE_BASE      https://YOURSITE.atlassian.net/wiki — required, must include /wiki
   ATLASSIAN_EMAIL      basic-auth user; injected by the runtime, placeholder default is fine
   ATLASSIAN_API_TOKEN  basic-auth token; injected by the runtime, placeholder default is fine
+  CONFLUENCE_BODY_DIR  directory --body-file must live under; defaults to $TMPDIR or /tmp
 
 output:
   one json object on stdout: {id, version, url}. diagnostics and api errors go to stderr.
@@ -185,8 +186,8 @@ if [ -n "$SPACE_KEY" ]; then
 
   cf_req POST "${BASE}/api/v2/pages" "$REQ"
   if [ "$RESP_CODE" -ge 300 ]; then
-    if [ "$RESP_CODE" = "409" ]; then
-      err "409 conflict on create — a page titled '${TITLE}' already exists in this space"
+    if [ "$RESP_CODE" = "400" ] && grep -qi 'title already exists' <<<"$RESP_BODY"; then
+      err "400 on create — a page titled '${TITLE}' already exists in this space"
     fi
     cf_print_error; exit 1
   fi
@@ -232,7 +233,7 @@ while :; do
   cf_req PUT "${BASE}/api/v2/pages/${PAGE_ID}" "$REQ"
   if [ "$RESP_CODE" -lt 300 ]; then break; fi
   if [ "$RESP_CODE" = "409" ] && [ "$ATTEMPT" -lt 2 ]; then
-    err "409 conflict (version race or title collision) — re-reading and retrying once"
+    err "409 conflict (version race) — re-reading and retrying once"
     ATTEMPT=2
     continue
   fi

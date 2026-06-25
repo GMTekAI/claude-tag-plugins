@@ -129,8 +129,6 @@ jira_body() {
      + (if $tok != "" then {nextPageToken: $tok} else {} end)'
 }
 
-if [ "$FORMAT" = "tsv" ]; then printf 'key\tsummary\tstatus\tassignee\tupdated\n'; fi
-
 # tsv cell rule: null -> "", nested -> json, else string
 read -r -d '' CELL <<'JQ' || true
 def cell: if . == null then "" elif type=="object" or type=="array" then tojson else tostring end;
@@ -154,10 +152,16 @@ print_page() {
 URL="${BASE}/rest/api/3/search/jql"
 TOKEN_NEXT=""
 FETCHED=0
+HEADER_DONE=0
 
 while :; do
   PAGE="$(jira_api -X POST "$URL" -d "$(jira_body "$TOKEN_NEXT")")"
   jira_check_error "$PAGE"
+
+  # defer the tsv header until the first request has succeeded so failed runs emit nothing on stdout
+  if [ "$FORMAT" = "tsv" ] && [ "$HEADER_DONE" = "0" ]; then
+    printf 'key\tsummary\tstatus\tassignee\tupdated\n'; HEADER_DONE=1
+  fi
 
   COUNT="$(jq -r '.issues | length' <<<"$PAGE")"
   TAKE="$COUNT"

@@ -1,0 +1,7 @@
+{
+  "name": "claude-tag-data-viz",
+  "version": "1.0.0",
+  "description": "Compose polished charts from tabular data — PNG, SVG, or self-contained interactive HTML — using the chartkit primitives.",
+  "author": { "name": "Anthropic" },
+  "homepage": "https://github.com/anthropics/claude-tag-plugins"
+}

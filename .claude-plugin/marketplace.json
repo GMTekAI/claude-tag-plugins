@@ -1,5 +1,6 @@
 {
   "name": "claude-tag-plugins",
+  "description": "Plugins that connect Claude Tag to common SaaS services, plus charting and configuration helpers.",
   "owner": {
     "name": "Anthropic"
   },
@@ -78,7 +79,7 @@
       "name": "notion",
       "displayName": "Notion",
       "source": "./notion",
-      "description": "Access Notion pages, databases, and blocks — search and read content.",
+      "description": "Access Notion pages, databases, and blocks — search, read, create, and update content.",
       "category": "project-management"
     },
     {
@@ -115,6 +116,20 @@
       "source": "./snowflake",
       "description": "Access Snowflake — run SQL statements, poll and fetch results, and browse warehouses.",
       "category": "data"
+    },
+    {
+      "name": "claude-tag-data-viz",
+      "displayName": "Data Visualization",
+      "source": "./claude-tag-data-viz",
+      "description": "Compose polished charts from tabular data — PNG, SVG, or self-contained interactive HTML.",
+      "category": "productivity"
+    },
+    {
+      "name": "claude-tag-troubleshoot",
+      "displayName": "Configuration & Troubleshooting",
+      "source": "./claude-tag-troubleshoot",
+      "description": "Guides configuration of @Claude agents — agent scopes, identity profiles, connections, repos, and instructions — and diagnoses plugin/skill loading problems from inside a running session.",
+      "category": "productivity"
     }
   ]
 }

@@ -109,7 +109,7 @@ deprecated — use v2. This is also the documented way to mute a single monitor:
 - **`PUT /api/v1/dashboard/{id}`** — **Full replace.** GET → mutate → PUT the whole doc.
 - **`DELETE /api/v1/dashboard/{id}`** — Delete.
 - **`GET /api/v1/dashboard/lists/manual`** — Dashboard lists.
-- **`GET /api/v1/dashboard/public/{token}`** — Shared (public) dashboard by token, no app key needed.
+- **`GET /api/v1/dashboard/public/{token}`** — Shared (public) dashboard by token.
 
 Dashboard IDs are short alpha strings (`abc-def-ghi`), visible in the URL, not the title.
 
@@ -123,7 +123,7 @@ Dashboard IDs are short alpha strings (`abc-def-ghi`), visible in the URL, not t
 - **`GET /api/v1/slo/{id}/corrections`** — Status corrections.
 - **`GET /api/v1/slo/search`** — Faceted search. Params: `query`, `page[size]`, `page[number]`.
 
-SLO `type` is `metric` or `monitor`. Thresholds:
+SLO `type` is `metric`, `monitor`, or `time_slice`. Thresholds:
 `[{"timeframe":"30d","target":99.9,"warning":99.95}]`.
 
 ## Events

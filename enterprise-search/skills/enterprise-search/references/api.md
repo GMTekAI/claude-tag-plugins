@@ -71,7 +71,7 @@ Retrieve ranked results from the index for a query and optional filters.
 | `trackingToken` | string | Per-result token — keep it for feedback. |
 | `title` | string | Document title. |
 | `url` | string | Permalink to the document in its source system. |
-| `snippets` | array | `{"snippet": "...", "text": "..."}` — match-centered preview. |
+| `snippets` | array | `{"text": "...", "snippet": "..."}` — match-centered preview. Prefer `text`; `snippet` is **deprecated** and may contain highlight markers. |
 | `document` | Document | See below. |
 
 `Document`:
@@ -117,17 +117,17 @@ Fetch full document details (including text content) by document ID.
 
 ### Response
 
-`documents` is an object keyed by the requested id/url. Each value is either:
+`documents` is an object keyed by the requested id/url. Each value is the `Document` object **directly** (no wrapper):
 
 ```json
-{"document": {"id": "...", "title": "...", "url": "...", "datasource": "...",
-              "content": {"fullTextList": ["...", "..."]}, "metadata": {...}}}
+{"id": "...", "title": "...", "url": "...", "datasource": "...", "docType": "...",
+ "content": {"fullTextList": ["...", "..."]}, "metadata": {...}}
 ```
 
-or, when the document is missing / not visible to the caller:
+or, when the document is missing / not visible to the caller, an error entry whose `error` is a plain string:
 
 ```json
-{"error": {"errorCode": "NOT_FOUND", "errorMessage": "Document not found"}}
+{"error": "Document not found"}
 ```
 
 `content.fullTextList` is the document's plain text in reading order, split into segments
@@ -141,8 +141,8 @@ curl -sS "${GLEAN_BASE_URL}/rest/api/v1/getdocuments" \
   -H "Content-Type: application/json" \
   -d '{"documentSpecs": [{"id": "12345"}], "includeFields": ["DOCUMENT_CONTENT"]}' \
   | jq -r '.documents["12345"] |
-      if .error then "ERROR: \(.error.errorMessage)"
-      else .document.content.fullTextList | join("\n")
+      if .error then "ERROR: \(.error)"
+      else .content.fullTextList | join("\n")
       end'
 ```
 
@@ -205,11 +205,18 @@ backend may use a different name for that source than real Glean does.
 
 | Status | Meaning | Body |
 |---|---|---|
-| `400` | Malformed request (bad cursor, missing required field) | `{"detail": "..."}` or Glean's `{"errorMessage": "..."}` |
-| `401` / `403` | Credential not configured or lacks access | varies |
+| `400` | Malformed request (bad cursor, missing required field) | usually empty or unstructured on real Glean; compatible backends may return `{"detail": "..."}` |
+| `401` / `403` | Credential not configured or lacks access | `403` on `/search` returns an `ErrorInfo` object — see below |
 | `408` | Search timed out | retry with a narrower query or a datasource filter |
-| `422` | Query invalid (unparseable operators, unknown enum value) | `{"detail": "..."}` |
+| `422` | Query invalid (unparseable operators, unknown enum value) | `ErrorInfo` object — see below |
 | `429` | Rate limited | back off and retry once |
 
-An HTML error body (rather than JSON) almost always means `GLEAN_BASE_URL` points at the web
-UI host instead of the API/backend host.
+Real Glean's structured error body (`/search` `403` and `422`) is an `ErrorInfo` object:
+
+```json
+{"errorMessages": [{"source": "...", "errorMessage": "..."}]}
+```
+
+Other 4xx responses (and all `/getdocuments` errors) have no published body schema and may be empty or plain text. Compatible backends sometimes return `{"detail": "..."}` instead — treat that as a backend convention, not part of Glean's spec.
+
+An HTML body (rather than JSON) on any status almost always means `GLEAN_BASE_URL` points at the web UI host instead of the API/backend host.
