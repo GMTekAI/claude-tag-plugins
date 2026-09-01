@@ -10,6 +10,7 @@ Each service is its own plugin, so a workspace can connect exactly the services 
 | **[asana](./asana)** | Tasks, projects, sections, comments; list, search, create/update |
 | **[bigquery](./bigquery)** | Run SQL, list datasets/tables, fetch schemas, manage jobs |
 | **[claude-tag-data-viz](./claude-tag-data-viz)** | Compose polished charts from tabular data — PNG, SVG, or self-contained interactive HTML |
+| **[claude-tag-oncall](./claude-tag-oncall)** | Oncall for @Claude in Slack — alert triage, incident investigation, sitreps, postmortems, rotation handoff |
 | **[claude-tag-troubleshoot](./claude-tag-troubleshoot)** | Configure and debug @Claude agents — agent scopes, profiles, connections, plugin/skill loading |
 | **[confluence](./confluence)** | Search pages, read/create/update content, spaces, comments |
 | **[datadog](./datadog)** | Logs, metrics, monitors, dashboards, SLOs, events, traces, incidents |
