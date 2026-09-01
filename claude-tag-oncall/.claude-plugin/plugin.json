@@ -1,0 +1,7 @@
+{
+  "name": "claude-tag-oncall",
+  "version": "0.1.0",
+  "description": "Oncall for @Claude Tag in Slack. Set up once, then Claude watches the team's alert channels and sorts signal from noise, investigates incidents and customer-reported problems (starting on its own when an outage hits), posts sitreps and postmortems, runs the rotation handoff, and drafts fixes for a person to approve.",
+  "author": { "name": "Anthropic" },
+  "keywords": ["oncall", "incident", "alerts", "monitoring", "triage", "tickets", "sitrep", "postmortem", "handoff", "charts", "slack", "tag"]
+}

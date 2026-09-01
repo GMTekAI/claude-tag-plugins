@@ -125,6 +125,13 @@
       "category": "productivity"
     },
     {
+      "name": "claude-tag-oncall",
+      "displayName": "Oncall",
+      "source": "./claude-tag-oncall",
+      "description": "Oncall for @Claude Tag in Slack — watches the team's alert channels and sorts signal from noise, investigates incidents and customer-reported problems, posts sitreps and postmortems, runs the rotation handoff, and drafts fixes for a person to approve.",
+      "category": "observability"
+    },
+    {
       "name": "claude-tag-troubleshoot",
       "displayName": "Configuration & Troubleshooting",
       "source": "./claude-tag-troubleshoot",
