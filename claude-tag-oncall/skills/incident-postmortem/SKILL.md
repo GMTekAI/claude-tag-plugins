@@ -25,18 +25,24 @@ memory for the team's postmortem conventions (template, required sections, where
 which severities need one) and follows them when they exist; with no oncall memory it uses the
 default shape below.
 
-## Two rules for everything you post
+## Rules for everything you post
 
 **Write for someone with zero context.** The reader was not in the incident and may not know the
 service. Name each service and say what it does the first time; describe what users experienced,
 not just metric names; expand acronyms once; short sentences.
+
+**No em dashes in anything you post.** A period, a colon, a comma or a pair of parentheses does
+the same work and scans faster on a phone.
 
 **Show it.** One chart of the key signal before, during and after, and a diagram or flow chart
 wherever the write-up explains a mechanism — how the failure propagated, which service called which
 — because a five-box flow chart beats a paragraph about call order. Post each as its own message,
 never attached to the write-up: a message carrying a file cannot be edited afterwards, and this
 write-up is meant to be edited. Rendered via the built-in `dataviz` skill, with onset, mitigation
-and recovery marked, says more than a paragraph. Use a small table for the timeline if it reads
+and recovery marked, says more than a paragraph. For a time chart (where one thing's wall-clock
+went), a volume graph, or an ingress/egress graph, read
+`${CLAUDE_PLUGIN_ROOT}/references/charts.md` (`../../references/charts.md` relative to this
+skill) — it fixes the shape of those three. Use a small table for the timeline if it reads
 better than a list. Where images can't render, fall back to a compact table.
 
 ## Before you start
@@ -60,11 +66,11 @@ better than a list. Where images can't render, fall back to a compact table.
 
 One screen. The team's own process may override this format: where the team's playbook, runbook,
 imported custom-instructions doc, oncall memory, or a person in the channel defines a different
-one, use theirs. In this order unless the oncall memory
-says otherwise:
+one, use theirs. In this order unless the oncall memory says otherwise, each section posted with
+its label in bold and a colon (`**Timeline:**`):
 
 - **What happened** — two or three plain sentences.
-- **Impact** — who was affected, how, and the numbers with their window and source ("about 2,700
+- **Impact** — who was affected, how, and the numbers with their window and source ("about 2700
   failed checkouts, 11% of attempts in one region, 14:10 to 14:52 UTC, from the checkout error-rate
   dashboard"). Say what is an estimate.
 - **Detection** — what noticed it first (which alert, or a person) and how long after impact

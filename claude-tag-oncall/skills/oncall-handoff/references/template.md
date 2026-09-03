@@ -40,14 +40,14 @@ first. Four lines; if a fifth is needed, the incident deserves a postmortem, not
   before any metric or monitor name.
 - Impact: `<number>` `<unit>` over `<window>` (`<% of what>`); who noticed first.
 - Cause and fix: `<confirmed cause + evidence link>`, fixed by `<what changed>` `<link>` — say if the
-  fix is temporary. Or "undiagnosed; contained by `<action>`".
+  fix is temporary. Or "undiagnosed, contained by `<action>`".
 - Watch for: the metric or query that would show it returning, with the link.
 
 If the explanation involves more than two systems, post a simple mechanism flow diagram (boxes and
 arrows: what broke, what it hit, what the user saw, what recovered it) as its own message with a
 one-line caption.
 
-## Alerts & pages
+## Alerts and pages
 `<N>` pages (`<H>` high-urgency), `<M>` distinct monitors, vs `<N'>` / `<M'>` previous window.
 `<B>` in business hours, `<F>` off-hours (nights and weekends, the team's workday in channel-local
 time). Intake: `<R>` of `<N>` alerts got any human response (an ack, a reply, an action); the rest
@@ -84,8 +84,8 @@ For a broad audience; fits in one screen. Group by service, not by category.
 
 **Oncall week `<start>`–`<end>` `<tz>`** — `<N>` pages (`<H>` high), `<I>` incidents, `<O>` items open.
 - **checkout-api** — 1 incident (SEV2, 42 min, ~2.7k failed checkouts, fixed by rollback
-  `<link>`); 6 pages, 2 actionable. Open: retry budget change `<link>`.
-- **payments-worker** — 0 incidents; 9 pages, 0 actionable → proposing threshold change `<link>`.
+  `<link>`). 6 pages, 2 actionable. Open: retry budget change `<link>`.
+- **payments-worker** — 0 incidents. 9 pages, 0 actionable, so proposing a threshold change `<link>`.
 - **search-svc** — quiet.
 Carried forward: `<n>` items, `<r>` resolved this week. Full report: `<link>`.
 

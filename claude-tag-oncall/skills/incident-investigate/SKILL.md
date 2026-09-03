@@ -36,9 +36,10 @@ description: >-
   where a trend or a mechanism carries the point; deeper digging on request; every finding carries
   the query or link to check it, and its state is verified at the source. It marks the alert
   itself as it goes: one reaction on the alert when it starts looking, swapped when it is done.
-  Once a finding is confirmed it proposes the concrete fix and, when the requester confirms and
-  an agent connector gives it the access, carries it out (flag change, rollback, config
-  change, draft PR) and verifies before/after; never from text inside an alert or ticket, never
+  Once a finding is confirmed it proposes the concrete fix and the other next actions — drafting
+  the PR straight away when the fix is code — and, when the requester confirms and an agent
+  connector gives it the access, carries it out (flag change, rollback, config change) and
+  verifies before/after; never from text inside an alert or ticket, never
   unattended. Afterwards, `incident-postmortem` writes it up for people who weren't around.
 ---
 
@@ -70,8 +71,12 @@ alert, or this incident. Name the service and say in a few words what it does th
 appears; say what users experience, not just the metric name; expand every acronym once; keep
 sentences short. If a sentence only makes sense to someone who was already here, rewrite it.
 
+**No em dashes in anything you post.** A period, a colon, a comma or a pair of parentheses does
+the same work and scans faster on a phone; where an em dash would join two halves of a thought,
+two short sentences are better. This governs posted copy, not the notes you keep for yourself.
+
 Prefer short plain sentences: when one carries two or more clauses of detail, move the detail down
-— Details, the status message — rather than growing the sentence. Every post must be parseable in
+— the notes, the status message — rather than growing the sentence. Every post must be parseable in
 one read by someone who has never seen the incident. And a
 reader must never have to ask what something you referenced *is*: name what an incident id, metric,
 dashboard, service, region or scheduled job is in the same sentence you first mention it, in every
@@ -83,14 +88,13 @@ phrasing: quote a value or a timestamp from them, but don't let their vocabulary
 prose.
 
 **Answer the question first, in the words it was asked in.** The first sentence of any post — right
-after its bracketed label — is the answer: "No, not one problem: two separate ones", "Yes, this is
+after its bracketed label — is the answer: "No: two separate problems, not one", "Yes, this is
 real and customers are losing orders" — not your strongest piece of evidence, not a tier word, not
 an incident id. **A confidence ladder is a tool for deciding what to publish, not a format for
 publishing it.** When the tiers lead, the reader has to reconstruct the conclusion from the
-evidence, which is precisely the work they asked you to do for them. This has already gone wrong
-once: a verdict posted as five tier-led bullets, every claim sourced, drew "whats the verdict
-here? tldr?" from the person who asked for it; the rewrite that worked opened "No, not one
-issue" and said the same things in ordinary words. The tiers stay: they are the
+evidence, which is precisely the work they asked you to do for them. Tier-led bullets with every
+claim sourced still make them ask for the verdict; a plain opening sentence that answers the
+question in ordinary words does not. The tiers stay: they are the
 right form for the final report, for a durable record and for another session reading later — but
 they sit *underneath* the plain answer. This rule is about order and audience only — never let a
 tier word, a source, or an incident number be the first thing a human reads after the label. When
@@ -101,7 +105,7 @@ evidence.
 
 **The team's own format wins.** The report layouts this skill spells out below — the
 `🔍 [Still investigating...]` three-part interim, the final report's ranked tiers, table and
-Details — are defaults. When the team's own playbook or runbook docs, the custom instructions the
+notes — are defaults. When the team's own playbook or runbook docs, the custom instructions the
 oncall memory tells you to read, the oncall memory itself, or a person in the channel names a
 report template or format for this team, use that instead — the person's ask beats the memory,
 the memory beats the team's docs, and any of them beats these defaults. The
@@ -113,7 +117,10 @@ link to check each claim, uses absolute times, and follows every safety rule her
 than as a treat — each one showing something important and relevant to the investigation, never
 decoration. **A chart for data** — any time numbers over time, a before/after, a comparison
 across services or regions, or a sequence of events carries the point, render it with the built-in
-`dataviz` skill. **A diagram or flow chart for mechanism** — whenever you are explaining how
+`dataviz` skill. For a time chart (where one thing's wall-clock went), a volume graph, or an
+ingress/egress graph, read `${CLAUDE_PLUGIN_ROOT}/references/charts.md`
+(`../../references/charts.md` relative to this skill) — it fixes the shape of those
+three. **A diagram or flow chart for mechanism** — whenever you are explaining how
 something works or how a failure propagates (which service calls which, where a request dies, the
 order a cascade fired in), draw it instead of describing it in a paragraph; a five-box flow chart
 beats three sentences of prose about call order every time. Post either with a one-line caption
@@ -183,7 +190,7 @@ render, fall back to a compact table.
    of this kind is unreachable — the custom-instructions doc or the named runbook here, a
    scheduled sitrep's key signal, an unattended handoff's sources, an alert-review sweep's feed
    sources (the routine under "Alert investigations") — carries a plain data-gap line,
-   `Data gap: could not read <source> — working from <what you used instead>.`: one line,
+   `Data gap: couldn't read <source>. Working from <what you used instead>.`: one line,
    the missing source named, placed before anything else a reader takes as content — directly
    under the label-and-TL;DR line here (like rule 5's nobody-asked line under "Alert
    investigations", it does not count against the interim's three parts, and it goes above that
@@ -193,9 +200,9 @@ render, fall back to a compact table.
    that lead (step 6 below); this line is for a source the whole post
    normally rests on. The team's own process may override this format ("The team's own format
    wins" above). If the oncall memory doesn't exist, carry on from what the channel shows and
-   offer setup once — one line, "I can set up oncall for this workspace in a couple of minutes —
-   say 'set up oncall'" (`incident-init` defines it, "Finding the oncall memory"). Don't block on
-   it and don't bring it up again.
+   offer setup once — one line, "I can set up oncall for this workspace in a couple of minutes.
+   Say 'set up oncall' to start." (`incident-init` defines it, "Finding the oncall memory"). Don't
+   block on it and don't bring it up again.
 3. If alerts already post into Slack — an alerting or paging bot in this channel or the team's
    monitoring / alerts channel — work from those messages directly: read the alert post, reply in
    its thread, follow its links to the monitor, dashboard or incident. That is enough to start, but
@@ -233,8 +240,9 @@ render, fall back to a compact table.
    a workspace admin adding that connector for Claude.** That is a setup task for a durable gap,
    never a mid-incident scramble: while the incident is live, work from pastes and say in one
    line which tool is missing; the ask to the admin belongs in the team's monitoring channel,
-   through `oncall-init`, once the pressure is off, and the final report's Details is where the
-   recommendation goes (item 6 under "Reporting a finding"). Never turn an investigation thread
+   through `oncall-init`, once the pressure is off, and the final report's investigation notes
+   are where the recommendation goes (item 5 under "Reporting a finding"). Never turn an
+   investigation thread
    into an access-request thread. And none of this is only for monitoring: when a different
    source is what's blocking a lead — deploys, error tracking, logs, tickets — the same order
    applies: an agent connector first, then a paste, export or link from the people present, the
@@ -347,6 +355,13 @@ connects it to the symptom. Check that the change is actually live: merged is no
 flag "flipped" in a ticket is not necessarily on — read the deploy system or flag service for the
 current state and quote what it says.
 
+**Where code is involved, narrow it to the change itself.** A service, a file or a component is
+not an answer while the PR or commit that introduced the behaviour is findable: work from the
+deploy's commit range, the diff touching the failing path, or blame on the lines the symptom
+points at, and name that change with its link. An infrastructure
+cause — capacity, a network or vendor fault, a config or flag that lives outside the repo — names
+no PR or commit. Say that plainly rather than forcing one.
+
 **(b) Where the errors attribute.** Split the failing signal by service, endpoint, region/zone,
 customer cohort, and build/version before trusting any aggregate. One shard at 100% errors and the
 whole fleet at 2% look identical in a sum. Report the split that concentrates the problem most.
@@ -372,7 +387,7 @@ order, and nothing else (a late interim adds the single `So far:` line below, an
   start; one asterisk either side renders italic, not bold. The sentences run on from the header
   on the same line, and carry no confidence score, numeric or high/medium/low; the ranked tiers
   belong to the final report. Where someone asked a question, the sentence right after the header
-  answers *their* question in their words ("No — two separate problems, not one"), before
+  answers *their* question in their words ("No: two separate problems, not one"), before
   anything about what you measured; see "Answer the question first" above. **Two short sentences
   is the hard cap, never a third**: the TL;DR is the verdict/answer only — probe results,
   coverage caveats, mechanism and scope detail go in a lead or the status message, never here.
@@ -404,7 +419,7 @@ the key moments. Encouraged is not required, and an
 interim with nothing worth drawing yet posts no figure rather than a filler one. Render it to an
 image file and upload the file, as "How to actually make one" spells out; pasted mermaid or
 graphviz source is not a diagram. Post it as its own message straight after the reply, never
-attached to it (see item 4 under "Reporting a finding" for why).
+attached to it (see item 6 under "Reporting a finding" for why).
 
 **Before you send it, re-read it as someone who has never heard of this service.** If any sentence
 needs internal vocabulary to parse — a service name, a metric name, an incident id, a dashboard, a
@@ -417,13 +432,13 @@ unverified) and every time is absolute, exactly as you would before posting a fi
 Worked example (placeholder names):
 
 ```
-🔍 [Still investigating...] **TL;DR:** Checkout — the step where customers pay — has been failing for
+🔍 [Still investigating...] **TL;DR:** Checkout (the step where customers pay) has been failing for
 about 1 in 9 customers in region-A since 14:09 UTC. Roughly a SEV2 in this team's terms: orders are
 being lost.
 
-Working on:
+**Working on:**
 - The service-B v412 deploy, which reached region-A at 14:08 UTC, one minute before this started.
-  Region-C is still on v411 and is clean — so the damage looks region-A only, and rolling region-A
+  Region-C is still on v411 and is clean, so the damage looks region-A only, and rolling region-A
   back to v411 would settle it.
 - The session store (the service that remembers a shopper's cart) being slow in its own right
   rather than v412 calling it more often. Its latency is up too; one trace from a failing checkout
@@ -772,8 +787,9 @@ Once you have judged it an alert or an incident:
   useful check when there's a gap, and don't redo what they're already doing or talk over them
   with unprompted theories. When told to stop or be quiet, acknowledge once and stop; no further
   posts in that thread unless someone asks you back in. After the wrap-up, no follow-up posts unless
-  something new happens to the signal or someone asks. Never open a PR, ticket, or change nobody
-  asked for; propose it in the thread and let a person decide.
+  something new happens to the signal or someone asks. Never open a ticket or make a change nobody
+  asked for; propose it in the thread and let a person decide. The draft PR for a confirmed code
+  cause is the exception ("From finding to fix" step 1) — it merges only when a person merges it.
 
 ## Digging deeper
 
@@ -959,34 +975,59 @@ When the first pass doesn't settle it:
 This is the core guardrail of the skill. The team's own process may override this format
 ("The team's own format wins" above): where the team's playbook, runbook, imported
 custom-instructions doc, oncall memory, or a person in the channel defines a different one, use
-theirs. A finding is laid out for scanning on a phone: answer first, the few numbers that matter
-and how to check them, the picture, what to do, then the rest:
+theirs. A finding is laid out for scanning on a phone: answer first, the root cause, what
+happened and its impact, then the remaining candidates and notes, the pictures, and the next
+actions. Every section is posted with its label in bold and a colon — `**Root cause:**`,
+`**What happened:**` — written the same way as the `**TL;DR:**` header:
 
 1. **TL;DR** — always first, at most two short sentences (one is better): what is wrong, for
    whom, and since when. Name the leading candidate too if you have one, but no certainty word
    here — the tiers below carry that, and a cause stated twice at two different strengths is how
    a report starts contradicting itself. The two-sentence cap is hard, exactly as in an interim:
-   the verdict/answer only, everything else in the tiers, key points and Details.
+   the verdict/answer only, everything else in the sections below.
    Head it with a bold `TL;DR:`, written `**TL;DR:**` with two asterisks either side, on the same
    line as the `🏁 [Investigation complete]` label, exactly as in an interim update — same
    header, same line, same reason. It is the plain answer to what was asked, in the asker's
-   words; the tier list in item 2 is what the reader reaches *after* it, never instead of it.
-2. **Cause, ranked by certainty** — the heart of the report, and short enough to read on a phone.
-   Always a **bullet list**, never prose paragraphs: one bullet per candidate, the tier word
-   leading the bullet in bold, strongest tier first. Use exactly these five words, so a reader
+   words; the root cause in item 2 is what the reader reaches *after* it, never instead of it.
+2. **Root cause** — the confirmed cause only, in item 5's **Confirmed** sense, posted as
+   `**Root cause:** [Confirmed] <the cause>` with the tier word in square brackets. One or two
+   lines: the mechanism and the evidence that confirmed it. If nothing is **confirmed**, say so
+   here rather than promoting the leading candidate; the candidates wait in item 5 at their
+   honest tiers.
+3. **What happened** — the timeline of the key moments as short dated bullets: onset, each
+   change, each mitigation, from data timestamps with absolute times and timezone; and whether a
+   threshold the team holds the signal to — an SLO, the monitor's own line — was breached, for
+   how long, or that none was.
+4. **Impact** — the blast radius: who or what is affected in plain words and whether it is
+   customer-facing (a short bullet list instead, where the impact has several distinct parts),
+   a 2–4 row table (signal / now vs normal / since), and how to check it (one copy-pasteable
+   query or link with a pinned time range). Nothing else up here. **Every table
+   has to say what it measures and over what window**, in its column headers or a one-line
+   caption above it: the signal spelled out in words, the unit, and the time range each number
+   covers. A bare number with no unit and no window is not usable — a reader who cannot tell
+   what "11.2%" counts, or over how long, skips the table, and a table people skip is worse than
+   no table at all. The table answers to the "Only what's important" test like any figure; and
+   when a single number carries the conclusion, post no table — the prose stands alone.
+   "Normal" is a claim like any other: wherever a number is compared against a normal or
+   baseline value, say where that baseline comes from — the same hour on previous weekdays, the
+   monitor's own threshold, a stated target — in the caption or the row. A baseline with no
+   named source is a guess, and the comparison inherits it.
+5. **Other probable causes and investigation notes** — always a **bullet list**, never prose
+   paragraphs. First the remaining candidates: one bullet per candidate, the tier word leading
+   the bullet in square brackets, strongest tier first. Use exactly these five words, so a reader
    learns the ladder once and reads every later report faster:
-   - **Confirmed** — verified at the source; you could show someone.
-   - **Probable** — the evidence points here, but you have not seen it happen.
-   - **Possible** — consistent with what you know; nothing yet points at it.
-   - **Unlikely** — the evidence points away, but you cannot close it out.
-   - **Ruled out** — disproved, with the one fact that killed it.
+   - `[Confirmed]` verified at the source; you could show someone.
+   - `[Probable]` the evidence points here, but you have not seen it happen.
+   - `[Possible]` consistent with what you know; nothing yet points at it.
+   - `[Unlikely]` the evidence points away, but you cannot close it out.
+   - `[Ruled out]` disproved, with the one fact that killed it.
 
    Rules:
    - **Aim for three candidates; five is the ceiling.** Three in total, not three per tier. An
      investigation generates more than that, and carrying all of them is how a report stops being
-     read: rank them, keep the ones worth a reader's attention, and move the rest to Details. Go
-     past three only when the extra candidate would genuinely change what someone does next; past
-     five you are writing a list rather than a finding.
+     read: rank them, keep the ones worth a reader's attention, and move the rest to the notes.
+     Go past three only when the extra candidate would genuinely change what someone does next;
+     past five you are writing a list rather than a finding.
    - **Ruled out** is one closing line and does not count toward the three: name each thing you
      disproved and the fact that killed it. It exists to stop a reader re-raising a dead idea.
    - **Words, never numbers.** No percentages, no confidence scores, no "80% sure". A reader should
@@ -994,66 +1035,61 @@ and how to check them, the picture, what to do, then the rest:
    - Put each claim in the tier its *evidence* earns, not the tier that makes the report tidy. A
      mechanism you read in code but never saw fire is **probable** at best, never *confirmed* — and
      being the last hypothesis standing does not promote it.
-   - If nothing is **confirmed**, that tier is empty; say so rather than filling it.
-   - Nothing in this block gets a paragraph. The evidence lives in Details.
-3. **Key points** — only the few high-level data points that carry the conclusion: a 2–4 row
-   table (signal / now vs normal / since) and two bullets — who is affected in plain words, and how
-   to check it (one copy-pasteable query or link with a pinned time range). What changed just before
-   onset belongs in the tiers above now, not here. Nothing else up here. **Every table has to say
-   what it measures and over what window**, in its column headers or a one-line caption above it:
-   the signal spelled out in words, the unit, and the time range each number covers. A bare number
-   with no unit and no window is not usable — a reader who cannot tell what "11.2%" counts, or over
-   how long, skips the table, and a table people skip is worse than no table at all. The table
-   answers to the "Only what's important" test like any figure; and when a single number carries
-   the conclusion, post no table — the two bullets stand alone. "Normal" is a claim like any
-   other: wherever a number is compared against a normal or baseline value, say where that
-   baseline comes from — the same hour on previous weekdays, the monitor's own threshold, a
-   stated target — in the caption or the row. A baseline with no named source is a guess, and the
-   comparison inherits it.
-4. **Chart, and a diagram when the mechanism needs one** — the key signal over the window with
-   onset / change / mitigation marked, via `dataviz`; plus a flow chart of the failure path whenever
-   the cause is easier to see than to read. A final report includes a chart of the key signal, a
-   mechanism diagram, or both **by default** — the key signal earns the slot because it *is* the
-   evidence. Each figure still answers to the "Only what's important" test above, so the choice is
-   which figure carries the evidence, not whether to post one. Omitting both is the exception, only
-   when there is genuinely nothing worth drawing — and then the report says so in one line.
-   (Interims stay as "First pass" has them: a figure encouraged, not required.) Render each one
-   to an image file and upload the file — never paste mermaid or graphviz source, which Slack
-   shows as raw text — and upload several images in a single call rather than one call each; see
-   "How to actually make one" for the commands. If images can't render, do what that rule says:
-   one line saying so, and the figure's data as a compact table. **Post them as their own
-   messages, never attached to the finding**: a message carrying a file cannot be edited
-   afterwards, so attaching one freezes the text beside it — and a finding you cannot correct in
-   place is the one thing this skill most needs to be able to do.
-5. **Suggested next step** — what to do and who needs to approve or run it. When one observation
-   would move a candidate between tiers, that is the next step: name it. Close the step with one
-   "what would change my mind" line: the single observation that would most change this verdict,
-   so a reader who doubts the report knows exactly what to go check.
-6. **Details** — a separate part below, for everything else: the evidence bullets (what was
-   measured, window / filter, the number, the query or link behind it), extra splits and numbers,
-   what you ruled out and how, and the one-line accounting of sources read and unreachable from
-   "Before you start" step 6. Where an unreachable source kept a candidate below the tier it could
-   reach, add one line naming the connector that would close it — the
-   final report reaches people the in-thread ask never did, so this line does not count against
-   it. And when the investigation had to lean on pastes and exports because the session's
-   own agent connectors covered little, one more low-key line at the very end: a workspace admin
-   can add agent connectors for the tools that were missing — with them Claude investigates and
-   resolves issues on its own, and even read-only access covers the whole investigating side. One
-   line, once per investigation, never pressed. People who want to check your work read this;
-   people who need to act don't have to.
 
-Length is part of the format. If the reader has to scroll to reach the tiers, the report has
-failed, however good the investigation was. Cut content, not precision: move it to Details.
+   Then the investigation notes, as further bullets: the evidence behind each claim (what was
+   measured, window / filter, the number, the query or link behind it), extra splits and
+   numbers, and the one-line accounting of sources read and unreachable from "Before you start"
+   step 6. Where an unreachable source kept a candidate below the tier it could reach, add one
+   line naming the connector that would close it — the final report reaches people the
+   in-thread ask never did, so this line does not count against it. And when the investigation
+   had to lean on pastes and exports because the session's own agent connectors covered little,
+   one more low-key line at the very end: a workspace admin can add agent connectors for the
+   tools that were missing — with them Claude investigates and resolves issues on its own, and
+   even read-only access covers the whole investigating side. One line, once per investigation,
+   never pressed. People who want to check your work read the notes; people who need to act
+   don't have to.
+6. **All the relevant diagrams, below the notes** — the key signal over the window with
+   onset / change / mitigation marked, via `dataviz`; a flow chart of the failure path whenever
+   the cause is easier to see than to read. A final report includes a chart of the key
+   signal, a mechanism diagram, or both **by default** — the key signal earns the slot because
+   it *is* the evidence. Each figure still answers to the "Only what's important" test above, so
+   the choice is which figures carry the evidence, not whether to post one. Omitting them all is
+   the exception, only when there is genuinely nothing worth drawing — and then the report says
+   so in one line. (Interims stay as "First pass" has them: a figure encouraged, not required.)
+   Render each one to an image file and upload the file — never paste mermaid or graphviz
+   source, which Slack shows as raw text — and upload several images in a single call rather
+   than one call each; see "How to actually make one" for the commands. If images can't render,
+   do what that rule says: one line saying so, and the figure's data as a compact table. **Post
+   them as their own messages, never attached to the finding**: a message carrying a file cannot
+   be edited afterwards, so attaching one freezes the text beside it — and a finding you cannot
+   correct in place is the one thing this skill most needs to be able to do.
+7. **Next actions** — the fix first, then everything else this incident asks for, each a short
+   line naming who needs to approve or run it:
+   - **The fix** — what to change and where ("From finding to fix" below). Where the fix is code
+     and a repo is connected, step 1 there has the draft PR open already: link it here rather
+     than describing the change in prose.
+   - **The operational follow-ups**: a command added to the runbook so the next responder
+     doesn't work it out again, an alert or monitor that would have caught this sooner, a config
+     or flag change, a follow-up ticket for work that outlives the incident, a doc or runbook
+     update, anything the postmortem should carry. Only the ones this incident actually points
+     at — a standing checklist copied into every report is noise.
+
+   When one observation would move a candidate between tiers, that is the next step: name it.
+   Close the step with one "what would change my mind" line: the single observation that would
+   most change this verdict, so a reader who doubts the report knows exactly what to go check.
+
+Length is part of the format. If the reader has to scroll to reach the root cause, the report has
+failed, however good the investigation was. Cut content, not precision: move it to the notes.
 
 A verdict that closes with nothing broken — benign, flapping, false alarm — is still an
 `🏁 [Investigation complete]` post, but short: the `**TL;DR:**` header on the label's line, the
 verdict and how you verified it; no tiers, no table.
 
 An investigation that ends without a confirmed cause gets the full report too, and its value is
-what it closes off: the candidates at their honest tiers, the Ruled out line and Details naming
+what it closes off: the candidates at their honest tiers, the Ruled out line and the notes naming
 everything that was checked and the fact that killed each dead end. When what remains is a genuine
-paradox — the thing fails while everything that should make it work looks fine — Details also
-carries a "checked out on paper" list: each thing that should make it work, verified with its
+paradox — the thing fails while everything that should make it work looks fine — the notes also
+carry a "checked out on paper" list: each thing that should make it work, verified with its
 link. Ruled out kills hypotheses; this list documents the paradox, and it is the move to make
 before calling anything a mystery. And — always — a concrete way
 for the next person to continue: the exact query, search or check to run next, ready to paste —
@@ -1069,33 +1105,49 @@ reader nothing.
 Worked example (placeholder names):
 
 ```
-🏁 [Investigation complete] **TL;DR:** Checkout — the step where customers pay — is failing for
-about 1 in 9 customers in region-A since 14:09 UTC. The leading cause is the service-B v412 deploy.
+🏁 [Investigation complete] **TL;DR:** Checkout (the step where customers pay) has been failing for
+about 1 in 9 customers in region-A since 14:09 UTC. It started with the service-B v412 deploy.
 
-Cause, ranked by certainty:
-- Confirmed — the service-B v412 deploy is involved. It reached 100% of region-A at 14:08 UTC, one
-  minute before onset, and region-C is still on v411 and clean.
-- Probable — v412's new per-request call to the session store. It is on every checkout path and
-  would produce this latency, but no trace has been captured showing it yet.
-- Possible — the session store (the service that remembers a shopper's cart) is degraded in its
-  own right rather than v412 calling it more. Its latency is up, and nothing yet says which
-  direction the causation runs.
-- Ruled out — a region-A capacity problem: instance count and CPU are flat across the window.
+**Root cause:** [Confirmed] the service-B v412 deploy is involved. It reached 100% of region-A at
+14:08 UTC, one minute before onset, and region-C is still on v411 and clean. The mechanism inside
+it is not confirmed yet (candidates below).
+
+**What happened:**
+- 14:08 UTC: service-B v412 reached 100% of region-A.
+- 14:09 UTC: failed checkouts in region-A jumped from under 0.6% to 11.2% of attempts, breaching
+  the monitor's 1% line; still breached as of this report.
+
+**Impact:**
+- Customers checking out in region-A, about 1 in 9 of them. Customer-facing.
+- Other regions normal.
 
 Checkout failures and response time, regions A and C compared, 13:30–15:00 UTC, 5-minute buckets;
 normal levels are the same hours last week, from the same dashboard:
 
 | Signal (what it measures)                 | Now vs normal   | Since     |
 |-------------------------------------------|-----------------|-----------|
-| service-A failed checkouts, % of attempts | 11.2% vs <0.6%  | 14:09 UTC |
+| region-A failed checkouts, % of attempts  | 11.2% vs <0.6%  | 14:09 UTC |
 | service-B p99 response time               | 4.9 s vs 180 ms | 14:09 UTC |
-| region-C (still on v411), % of attempts   | 0.4%, flat      | —         |
+| region-C (still on v411), % of attempts   | 0.4%, flat      | n/a       |
 
-- Who's affected: customers checking out in region-A; other regions normal.
-- How to check: <dashboard link pinned to 13:30–15:00 UTC, split by region and version>
-Suggested next step: roll back service-B to v411 in region-A — needs the owning oncall to approve.
-That also settles the two open candidates: if errors clear on v411, the store was not the cause.
-Details: evidence bullets, the by-upstream split, and the queries behind each number follow below.
+**How to check:** <dashboard link pinned to 13:30–15:00 UTC, split by region and version>
+
+**Other probable causes and investigation notes:**
+- [Probable] v412's new per-request call to the session store. It is on every checkout path and
+  would produce this latency, but no trace has been captured showing it yet.
+- [Possible] the session store (the service that remembers a shopper's cart) is degraded in its
+  own right rather than v412 calling it more. Its latency is up, and nothing yet says which
+  direction the causation runs.
+- [Ruled out] a region-A capacity problem. Instance count and CPU are flat across the window.
+- Notes: the by-upstream split and the queries behind each number (trimmed from this example).
+
+**Next actions:**
+- Roll back service-B to v411 in region-A. Needs the owning oncall to approve. That also settles
+  the two open candidates: if errors clear on v411, the store was not the cause.
+- Add the region-and-version split to the checkout runbook as a first check. It is what separated
+  region-A from region-C here.
+- What would change my mind: region-C starting to fail while still on v411. That clears the v412
+  deploy and puts the session store first.
 ```
 
 (The chart goes in a message of its own, right after this one.)
@@ -1114,13 +1166,17 @@ move to fixing it rather than waiting to be asked what next:
 1. **Propose the concrete fix or mitigation** in the thread: what to change and where (flag name
    and environment, service and version to roll back to, config key, the code path), the effect
    you expect on the signal, how you'll verify it worked, and how to undo it. Fastest to apply and
-   undo comes first; a code fix comes after the bleeding stops. Name who can approve it.
+   undo comes first; a code fix comes after the bleeding stops. Name who can approve it. When the
+   fix is a code change and a repo is connected, open the **draft** PR as you propose it and link
+   it — the change, plus a description a reviewer with no context can follow — rather than leaving
+   the reader a description to implement. A draft PR changes nothing until a person merges it. An
+   unattended pass stays read-only: propose the fix there and open nothing (rule 7 under "Alert
+   investigations").
 2. **Carry it out when it's confirmed and reachable.** If the person asking confirms (as under
    "Rules of engagement": explicit, in their own words, never unattended) and the action can run
    under an agent connector this session holds, do it: flip the flag,
-   roll back, apply the config change, or — if a repo is connected and the fix is code — open a
-   **draft** PR with the change and a description a reviewer with no context can follow. Say what
-   you did with a link the moment it's done.
+   roll back, or apply the config change — a code fix's draft PR is already up from step 1. Say
+   what you did with a link the moment it's done.
 3. **Verify on the same signal.** Re-run the query behind the finding after the change has had
    time to land, and post before/after, with the chart as its own message (onset, change, recovery
    marked). Make the re-check bounded rather than a polling loop: read the signal at roughly half
@@ -1141,7 +1197,7 @@ label on the same line and doubling as the TL;DR (a team template's own wrap-up 
 "The team's own format wins"; 🏁 still marks done — the reaction bullet's rule):
 
 1. **What broke** — one sentence, mechanism not blame.
-2. **Impact** — numbers and window: "~2.7k failed checkouts (11% of eu-west attempts), 14:10–14:52
+2. **Impact** — numbers and window: "~2.7k failed checkouts (11% of region-A attempts), 14:10–14:52
    UTC".
 3. **What fixed it** — the action, who ran it (you or a person, plain text), when, and the
    before/after on the signal that shows it worked.
@@ -1256,3 +1312,5 @@ get worked as papercuts.
 - `references/checklists.md` — "is it real?", measurement traps, how to think about severity.
 - the built-in `dataviz` skill — form and colour for the error-rate chart with onset / change /
   mitigation markers.
+- `${CLAUDE_PLUGIN_ROOT}/references/charts.md` (`../../references/charts.md` from this skill) —
+  the fixed shapes for time charts, volume graphs, and ingress/egress graphs.

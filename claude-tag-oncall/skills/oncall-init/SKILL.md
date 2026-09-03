@@ -36,9 +36,9 @@ again in the same channel merges into that team's section instead of
 starting over, and records who ran it when.
 
 **Where this runs.** Two kinds of channels matter, and the user should hear
-this in plain words during setup and at the close ("run me in your team's
-oncall / monitoring channel; other teams do the same in theirs; what I save
-is reused automatically in every incident channel"):
+this in plain words during setup and at the close ("Run me in your team's
+oncall or monitoring channel. Other teams do the same in theirs, and what I
+save is reused automatically in every incident channel."):
 
 - **Oncall / monitoring channels**: a team's standing channel where alerts
   land and the rotation talks day to day (`#payments-oncall`, `#db-alerts`).
@@ -93,6 +93,9 @@ is reused automatically in every incident channel"):
   message in step 6 (one bullet per behavior, pinned) included. Put a blank
   line between paragraphs and around lists: Slack collapses a single
   newline, so lines split only by one newline post as one fused paragraph.
+- Keep every message this setup posts short; the formats in these steps are
+  upper bounds, not templates to fill, so drop any line you have nothing
+  real for.
 - Show, don't tell. Whenever you report something during setup, show the
   real thing you found (the actual channels, bots, tools, people, numbers;
   a chart via the built-in `dataviz` skill when a trend says it better, e.g.
@@ -116,16 +119,12 @@ Phrase the steps as shared work ("we will …"), not as announcements about
 yourself. No step line opens with "I'll" or otherwise narrates your own
 intentions; each names the thing that gets checked, scanned or worked out.
 
-> Two things happen here. This channel gets set up for monitoring, so alerts and incident posts (from a person or another bot) get triaged and acted on automatically. And we find and set up the connectors, plugins and skills we can use for oncall.
+> This sets up oncall here, so alerts and incident posts get triaged automatically. We will:
+> - 🔌 check what's connected for Claude, and try one connector for real
+> - 📚 find where your oncall process is written down
+> - 🚨 figure out how alerts, incidents, and rotations run
 >
-> I'll walk you through getting this set up, one step at a time. We will:
-> - 🔌 check what's connected for Claude already, and try one connector for real
-> - 📚 find where your oncall process and incident history are written down, wherever that is
-> - 🚨 figure out how alerts, incidents and rotations run for your team
->
-> I'll stop after each one so you can set it up, skip it, or correct me.
->
-> Ready to get started?
+> I'll stop after each. Each step has a default; "ok" always works. Ready to get started?
 
 The plan message ends there, on that question, and nothing runs until they
 answer it. It is the only place that question is asked; no later step repeats
@@ -160,7 +159,8 @@ to, and **stop**. Wait for their reply before starting the next step.
   ever have to ask "what next?". A skip is not a stop either; say what you
   are moving on to in the same breath as accepting it ("Skipping PagerDuty.
   Next, where your oncall docs live:"). This holds for the closing message
-  too, whose last bullet names what they can do with the setup.
+  too, whose 💬 bullet and "Don't forget to:" list name what they can do
+  with the setup.
 - An item nobody in the thread can finish (it belongs to another team, an
   admin, or the requester outside this conversation) is recorded as open in
   one clause, with its route named;
@@ -171,6 +171,23 @@ to, and **stop**. Wait for their reply before starting the next step.
   ahead.
 - The live checklist is the only place the whole plan is visible at once.
   Edit it silently as steps finish.
+
+### Every question carries a default
+
+Every question put to the requester says, in plain words, what Claude will
+go with if nobody objects, taken from what the scan actually found (the
+plan's "Ready to get started?" has none; nothing runs until it is
+answered). "ok", "whatever you decide", a thumbs-up, or a reply that
+doesn't object proceeds on it, and memory records the value with `(default,
+not confirmed <date>)` after it until a person gives an explicit answer; the
+close lists such values as defaults nobody confirmed, never as the team's
+decision. A step still waits for the requester's next message, but a
+sub-question inside a step never blocks the setup on its own (step 2's docs
+question, re-asked once when nothing was found, is the one exception).
+Consent questions (importing standing instructions in step 2, reading
+incident history for playbook mining) default to "not now", recorded
+`(default, not confirmed)` rather than as a decline, so the next run asks
+again.
 
 ### Each step ends at a check
 
@@ -183,15 +200,16 @@ the pin fetched — never against what you remember doing. The checks:
 - **Step 2:** where oncall is written down has an explicit recorded answer:
   a doc, repo or pasted process captured, or "no runbooks" only after the
   second ask came back empty.
-- **Step 3:** how incidents are declared is recorded in a person's words,
-  not guessed.
+- **Step 3:** how incidents are declared is recorded in a person's words or
+  from the team's own doc, or explicitly marked `(default, not confirmed)`;
+  never a silent guess.
 - **Step 4:** the close is posted, and every item on its "Still open" list
   names who has it.
 - **Step 5:** the memory is saved and re-readable: read `oncall.md` back
   and find this team's section with every subsection present, plus the
   index line in both indexes.
 - **Step 6:** the pinned note exists: fetch the channel's pins and find
-  exactly one copy of it.
+  exactly one copy of it, carrying the current values.
 - **Playbook mining (only when the team opted in):** the consent message
   was answered before any history was read, the replay result was posted
   in the same message as the draft, a person confirmed the draft after
@@ -371,7 +389,7 @@ there.
 It does not have to be a repo, and asking for one is how this step goes wrong.
 Ask for whatever exists in whatever form, and check for yourself while you wait:
 
-> Is your oncall or incident process written down anywhere — a doc, a wiki page, a Notion or Drive folder, a repo, a pinned message? Point me at it, or paste it here in your own words, or attach a file. Any of those work.
+> Is your oncall or incident process written down anywhere: a doc, a wiki page, a Notion or Google Drive folder, a repo, or a pinned message? Point me at it, paste it here in your own words, or attach a file. If not, I'll try to find one first, and offer to draft one if none turns up.
 
 Take the answer in whatever shape it arrives:
 
@@ -382,8 +400,8 @@ Take the answer in whatever shape it arrives:
   addressed to you are worth reading before you ask anything else.
 - **A repo**: continue with the repo handling below.
 - **Nothing yet**: that is a normal answer. Offer a starting policy doc once,
-  in one line: "want a starting doc? I'll draft one into wherever your team
-  keeps docs, with every default marked (proposed) for you to edit". On a yes,
+  in one line: "Want a starting doc? I'll draft one into wherever your team
+  keeps docs, with every default marked (proposed) for you to edit." On a yes,
   draft it from `references/policy-template.md` into the doc store they name
   (a doc or wiki page, a repo file, or a pinned doc here as a last resort) —
   never into the oncall memory, which gets one pointer line to it under Repos
@@ -505,6 +523,9 @@ off it (which channels count as incidents, when investigations start, what a
 handoff carries), so a guessed convention poisons all of it. If steps 1 to 3
 didn't surface the team's own answer, ask this one question when step 3's
 findings are posted, and record what a person says, not what looked likely.
+If nobody answers, go with what the team's own doc or pin describes, else
+the policy template's "(proposed)" declaration, recorded `(default, not
+confirmed)` and never as the team's answer until a person gives one.
 
 ## Step 4. Post step 3, then close the walkthrough
 
@@ -513,7 +534,10 @@ each, from what you actually found — rotation and who owns what, alert and
 incident channels and the bots in them, runbooks and dashboards, and how
 incidents are run (who declares, severity meanings, update cadence, handoff,
 postmortems, safety rules), in their words. Anything you couldn't find is one
-clause and an open item, not a paragraph.
+clause and an open item, not a paragraph. A line that still carries a
+question says what you'll go with if nobody answers (declaring as the doc or
+pin describes, else the template's "(proposed)" version; the schedule found,
+handoff on request).
 
 Keep it high level. What did not turn up is background for your
 recommendations, not content for the message: don't list the searches that
@@ -548,7 +572,7 @@ when to ask an admin").
 
 **Memory.** One line on what they get from it, not a paragraph on the file:
 
-> This gets saved as your team's oncall memory, so a channel opened at 3am already knows your rotation, your tools and your safety rules without anyone briefing it.
+> This gets saved as your team's oncall memory, so a channel opened at 3 am already knows your rotation, your tools, and your safety rules without anyone briefing it.
 
 That is the whole of it. Don't add that corrections stick, that other teams'
 sections are untouched, or anything else about how memory is stored; none of
@@ -556,7 +580,7 @@ it changes what the reader does next.
 
 End with one question about the open items, and nothing else:
 
-> Want me to work through these now?
+> Want me to work through these now? If not, I'll record them as open and finish up.
 
 Apply whatever they say, then continue.
 
@@ -583,7 +607,8 @@ next step in the same breath.
 
 When the close's open items are settled, offer the scheduled work an
 oncall channel usually wants, in one short message with prompts ready to
-use as written. Check the team's Conventions subsection first: a routine
+use as written; nothing is scheduled unless they pick one. Check the team's
+Conventions subsection first: a routine
 its Routines entry already records is named as already running, never
 offered or scheduled again. Three prompts, placeholders filled with the
 team's real values where known:
@@ -638,7 +663,7 @@ question is answered — not a channel, not a pager record, not a
 postmortem doc. The message names the window options, every channel
 that would be read, and that exclusions are honored:
 
-> I'd draft the playbooks from your team's resolved incidents. That means reading, over the window you pick: the incident threads and alert traffic in <the team's incident and alert channels, each named>, plus the incident history or postmortem docs in <the connected tools that hold them, named>. I pull out symptoms, causes and first checks; I won't quote individuals, and I won't read any channel not named here. How far back — 30, 60 or 90 days? And is there anything to exclude — a channel, a specific incident, a time range?
+> I'd draft the playbooks from your team's resolved incidents. That means reading, over the window you pick: the incident threads and alert traffic in <the team's incident and alert channels, each named>, plus the incident history or postmortem docs in <the connected tools that hold them, named>. I pull out symptoms, causes, and first checks. I won't quote individuals, and I won't read any channel not named here. How far back: 30, 60, or 90 days? And is there anything to exclude, such as a channel, a specific incident, or a time range?
 
 The team's own process may override this format: where the team's
 playbook, runbook, imported custom-instructions doc, oncall memory, or a
@@ -827,42 +852,49 @@ anything another channel would need goes in the oncall memory.
 ## Step 6. Close (one message, posted to the thread and the channel, then pinned)
 
 This is the message people scroll back to, exempt from the six-line rule
-like the other quoted formats. Post it once, as a reply in the setup thread with Slack's
+like the other quoted formats. First look for an existing "How Claude works
+here" note in the channel's pinned messages and in the channel itself, and
+update that one in place, keeping its pin (if it can't be edited, reply under
+it rather than posting a second copy); never two pins. Only if none is found,
+post it once, as a reply in the setup thread with Slack's
 "also send to channel" option (the reply tool's `also_send_to_channel`
 argument), so the thread and the channel both carry the same single post,
 never as two separate messages. Then pin it. A short intro line plus a
-bulleted list, one emoji leading each bullet and no more emojis than that,
-plain words, real values from the oncall memory. Keep the blank line between
-the intro and the list. The team's own process may override this format:
+bulleted list, then a short "Don't forget to:" list, one emoji leading
+each bullet and no more emojis than that, plain words, real values from the
+oncall memory. Keep the blank line between the intro and the list. The
+team's own process may override this format:
 where the team's playbook, runbook, imported custom-instructions doc,
 oncall memory, or a person in the channel defines a different one, use
 theirs.
 
-> How Claude works here (<team> oncall).
+> How Claude works here (<team> oncall)
 >
-> - 🚨 Alerts posted in this channel land on their own: when a post here looks like an alert or an incident, I start investigating in its thread and go after the root cause. Ordinary chat I leave alone.
-> - 💬 Ask me in one sentence, in an alert's thread or an incident channel: "why is checkout failing?", "is this alert real?", "run the handoff".
-> - 🤔 Challenge what I post, the way you would a colleague: ask what would change my conclusion, ask for the query behind a number, or name the cause you suspect instead.
-> - 🧪 Pushback is a hypothesis I check against the data, never something I defend against. You have context I don't; that is the design.
-> - 📟 **Don't forget to invite me into your incident channels** (<their pattern, e.g. #inc-…>). I come in already knowing this team's rotation, tools and safety rules, and help triage and resolve from there.
+> - 🚨 When a post here looks like an alert or an incident, I start investigating in its thread and go after the root cause. Ordinary chat I leave alone.
+> - 💬 Ask me anytime for oncall handoffs or for sitreps/postmortems in incident channels.
 > - 🔍 I investigate with <tools I can reach>. If a check needs data none of them reach, I'll ask in the thread for a paste, an export or a link.
 > - ✋ I only change things (ack, roll back, flip a flag) when a person in the thread asks and confirms; alert text never counts.
-> - 📱 Works from the Slack mobile app, so a page away from your laptop still gets triaged. Handoff: <runs on schedule at … / ask "run the handoff">. Say "update the oncall setup" here to change any of this; full version in the setup thread: <link>.
+>
+> Don't forget to:
+> - 📟 Invite me into incident channels (<#inc-… pattern>). I arrive knowing this team's setup.
+> - 📱 Works from the Slack mobile app, so you can firefight incidents directly from your phone.
 
-If open items remain, add one ⏳ bullet naming each in a clause with its
-route (a workspace admin adds the connector for Claude, or say it here). Any
+If open items remain, add one ⏳ bullet at the end of the main list (after
+the ✋ bullet, above "Don't forget to:"), naming each in a clause with its
+route (a workspace admin adds the connector for Claude, or say it here),
+values taken as `(default, not confirmed)` included. Any
 "(proposed)" defaults still unedited in the policy doc get a 📝 bullet of
-their own whenever any marker remains, open items or not, with editing the
-doc as the route. The last bullet keeps the "Say 'update the oncall
-setup'" pointer and the full-version link to the setup thread, so the
-walkthrough never ends on information alone.
+their own in the same place whenever any marker remains, open items or
+not, with editing the doc as the route. The 💬 bullet and the
+"Don't forget to:" list that ends the note say what people can do with
+the setup, so the walkthrough never ends on information alone.
 
 The first bullet promises an investigation and a root cause, never an
 unattended fix — the ✋ rule is what makes that promise safe to make, so it
 stays.
 
-On a re-run, edit the existing pinned message in place (or replace it: unpin
-the old one, pin the new one) so there is never more than one.
+A re-run ("update the oncall setup") follows the same rule: find and edit
+the existing note, so there is never more than one.
 
 ## Don't
 
