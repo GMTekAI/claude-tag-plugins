@@ -42,8 +42,8 @@ here; steps 4 and 5 apply them rather than restating them.
 
 **As simple as possible.** Assume the reader has never heard of the service, the alert, or this
 incident. Short plain sentences. Say what the service does and what users saw before any metric or
-monitor name — "checkout-api (takes customer orders) returned errors to ~11% of EU checkouts for
-42 min" comes before any metric name or ticket ID. A metric name never appears without a
+monitor name — "checkout-api (takes customer orders) returned errors to ~11% of region-A checkouts
+for 42 min" comes before any metric name or ticket ID. A metric name never appears without a
 plain-word gloss of what it measures; expand every acronym the first time it appears. If a
 sentence only makes sense to someone who was already here, rewrite it.
 
@@ -98,9 +98,9 @@ forget, and what is likely to page them next.
   bots, the tools, and the handoff conventions (when handoff happens, what a report must contain,
   where reports go) matter most. If the oncall memory doesn't exist, carry on from what
   the channel shows and, when a person is reading along, offer setup once — one line, "I can set
-  up oncall for this workspace in a couple of minutes — say 'set up oncall'" (`incident-init`
-  defines it), which the `oncall-init` skill in this plugin handles. Don't block on it and don't
-  bring it up again; never on an unattended run.
+  up oncall for this workspace in a couple of minutes. Say 'set up oncall' to start."
+  (`incident-init` defines it), which the `oncall-init` skill in this plugin handles. Don't block
+  on it and don't bring it up again; never on an unattended run.
 - **The window**, in this order of precedence: the window the person asked for ("weekly", "since
   Monday 09:00", "2026-03-02..2026-03-09"); else since the previous handoff report in this channel;
   else, with no previous report, the paging schedule's last completed shift if you can read it;
@@ -183,13 +183,13 @@ Sort every ledger row into exactly one bucket:
 
 - **Incidents** — qualified by a high-urgency page or a formal declaration, nothing else; a heated
   thread that was neither goes under alerts or requests.
-- **Alerts & pages** — everything the monitors emitted. Group repeats of the same monitor into one
+- **Alerts and pages** — everything the monitors emitted. Group repeats of the same monitor into one
   line with a count and an "actionable?" verdict (did any occurrence lead to a human doing
   something other than ack). Split each count business-hours vs off-hours (the team's workday in
   the channel's local time; nights and weekends are the off-hours side), and note per row whether
   any occurrence got a human response at all — an ack, a reply, an action — so the report can say
   how many alerts fired into silence.
-- **Requests & questions** — humans asking the oncall for something: access, a manual run, "is X
+- **Requests and questions** — humans asking the oncall for something: access, a manual run, "is X
   expected", a customer escalation. Group by kind.
 - **Noise** — bot chatter, duplicates, off-topic. Counted, not listed.
 
@@ -235,7 +235,7 @@ to rival its hits: one line proposing a correction or retirement.
 
 Keep the register formal, and allow exactly one dry aside where the numbers have already earned it —
 about a monitor or a quiet week, never about an incident with customer impact, never about a person,
-never in the TL;DR. "Fired 31 times, actionable 0 — it is crying wolf in production" both informs
+never in the TL;DR. "Fired 31 times, actionable 0. A monitor nobody believes anymore" both informs
 and lands; a joke that does not also inform gets cut.
 
 Write every section to "How to write it — simple, for a reader with no context" — it governs the
@@ -367,7 +367,7 @@ different one, use theirs):
 
 ```
 Run summary
-Window: 2026-03-02 09:00 → 2026-03-09 09:00 Europe/Berlin (complete | partial as of HH:MM TZ)
+Window: 2026-03-02 09:00 – 2026-03-09 09:00 Europe/Berlin (complete | partial as of HH:MM TZ)
 Counts: incidents 1 · pages 14 · alerts 63 · requests 7
 Open items: 4
 Needs a human: confirm <incident id> root cause; decide on muting disk-70% monitor (fired 23x, actionable 0)
@@ -382,7 +382,7 @@ source that could not be read this run is never reported as healthy and never fo
 as zero: its numbers are "unavailable this run", said in those words in the run summary, with what
 would fix it under "Needs a human" — and no count or verdict in the report improves on a data gap.
 Such a run also opens its run-summary block with the one-line data-gap prefix,
-`Data gap: could not read <source> — working from <what you used instead>.` (defined in
+`Data gap: couldn't read <source>. Working from <what you used instead>.` (defined in
 `incident-investigate`, "Before you start" step 2), so the gap is the first thing a reader sees.
 
 **At least one chart, every time**, rendered with the built-in `dataviz` skill and posted as its own

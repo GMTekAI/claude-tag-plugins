@@ -46,11 +46,17 @@ alert, or this incident. Name the service and say in a few words what it does th
 appears; say what users experience, not just the metric name; expand every acronym once; keep
 sentences short. If a sentence only makes sense to someone who was already here, rewrite it.
 
+**No em dashes in anything you post.** A period, a colon, a comma or a pair of parentheses does
+the same work and scans faster on a phone.
+
 **Show it, and lean into it.** Two different pictures, both worth reaching for by default rather
 than as a treat — each one showing something important and relevant to the investigation, never
 decoration. **A chart for data** — any time numbers over time, a before/after, a comparison
 across services or regions, or a sequence of events carries the point, render it with the built-in
-`dataviz` skill. **A diagram or flow chart for mechanism** — whenever you are explaining how
+`dataviz` skill. For a time chart (where one thing's wall-clock went), a volume graph, or an
+ingress/egress graph, read `${CLAUDE_PLUGIN_ROOT}/references/charts.md`
+(`../../references/charts.md` relative to this skill) — it fixes the shape of those
+three. **A diagram or flow chart for mechanism** — whenever you are explaining how
 something works or how a failure propagates (which service calls which, where a request dies, the
 order a cascade fired in), draw it instead of describing it in a paragraph; a five-box flow chart
 beats three sentences of prose about call order every time. Post either with a one-line caption
@@ -155,8 +161,8 @@ Worked example (placeholder names):
 Sitrep 3 · as of 2026-03-04 15:20 UTC · mitigating
 
 **TL;DR:** Checkout (checkout-api, the service that takes customer orders) has been failing for
-some customers in region-A since 14:09 UTC; a rollback at 14:58 is bringing the failure rate down
-and other regions are fine. The one open decision is whether to hold the same release out of the
+some customers in region-A since 14:09 UTC. A rollback at 14:58 UTC is bringing the failure rate
+down, and other regions are fine. The one open decision is whether to hold the same release out of the
 other regions before 16:00 UTC.
 **Impact:**
 - About 1 in 9 checkout attempts in region-A failed at peak (14:10–14:50 UTC); now about 1 in 40
@@ -166,13 +172,13 @@ other regions before 16:00 UTC.
   oncall; the error rate started dropping four minutes later.
 - The retry-storm theory was dropped by the team: queue depth stayed flat.
 **In progress:**
-- Watching the error rate back to its normal <0.6% — payments oncall.
-- Working out whether failed orders were retried by customers or lost — nobody yet.
+- Watching the error rate back to its normal <0.6% (payments oncall).
+- Working out whether failed orders were retried by customers or lost (nobody yet).
 **Needs:**
 - A decision from the release owner on holding v412 out of the other regions before the
   16:00 UTC deploy window.
 **Next update:** 15:50 UTC, sooner if the error rate stops falling.
-Details: <investigation thread> · <dashboard, 13:30–15:30 UTC, split by region> · <incident link>
+**Details:** <investigation thread> · <dashboard, 13:30–15:30 UTC, split by region> · <incident link>
 ```
 
 (followed by its own message: the checkout-api error-rate chart for region-A, 13:30–15:20 UTC,
@@ -205,7 +211,7 @@ reuse its wording, and don't include a part just because the example had one.
   scheduled sitrep costs one cycle; a duplicate trains readers to skip them.
 - A sitrep never declares the incident resolved, changes its severity, or assigns anyone; it
   reports what the people running the incident declared. If it looks resolved to you and nobody
-  has said so, say "signal back to normal since HH:MM; not yet declared resolved" under Impact.
+  has said so, say "signal back to normal since HH:MM TZ, not yet declared resolved" under Impact.
 
 ## Keeping a cadence
 
@@ -225,7 +231,7 @@ you to keep the cadence the oncall memory sets for this severity:
    judgment between the check and the send ("feels stale", "wait for the next data point"); a
    suppression worth having is a change to propose to the person who set the schedule, not a call
    made at send time. If nothing did, post one line instead of a full sitrep — "No change since
-   Sitrep N (as of …): <signal> still <level>; next check HH:MM TZ" — so the cadence holds without
+   Sitrep N (as of …): <signal> still <level>. Next check HH:MM TZ." — so the cadence holds without
    re-posting the same content; the team's own process may override the one-liner's format
    (step 4 under "Before you write"). When the check itself rested on a judgment call — whether
    a wobble in the signal counts as a real move, whether a side comment counts as a statement
@@ -234,8 +240,8 @@ you to keep the cadence the oncall memory sets for this severity:
    line's format is defined here (`oncall-handoff` restates it in its run summary);
    the team's own process may override it (step 4 under "Before you write"). "No change" must be a
    read, not an assumption: when the key signal or a source could not be read this run, say so in
-   those words ("could not read <signal> this run"), and lead the post with the one-line data-gap
-   prefix, `Data gap: could not read <source> — working from <what you used instead>.`
+   those words ("couldn't read <signal> this run"), and lead the post with the one-line data-gap
+   prefix, `Data gap: couldn't read <source>. Working from <what you used instead>.`
    (`incident-investigate`, "Before you start" step 2, is its defining copy) — the first line
    after any fixed opener, or above the no-change one-liner — a missing signal
    is never reported as healthy, and the stage and the impact numbers never improve on a run whose
