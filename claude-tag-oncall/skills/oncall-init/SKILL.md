@@ -1,26 +1,16 @@
 ---
 name: oncall-init
 description: >-
-  Set up Claude Tag for oncall for a team, from that team's standing (public)
-  oncall / monitoring channel. It does two things: it sets the channel up for
-  monitoring, so alerts and incident posts here (from a person or from another
-  Slack bot) get triaged and acted on automatically, and it finds and sets up
-  the connectors, plugins and skills Claude can use for oncall. A workspace can
-  have several such channels (one per team or rotation); run it once in each, by
-  anyone, and every run adds or updates that team's section in the one oncall
-  memory in shared workspace memory, never touching another team's part.
-  Running it again in the same channel updates that section. Use when someone
-  says "set up oncall", "init oncall", "get Claude ready for incidents",
-  "configure Claude for on-call". Surveys the agent connectors a workspace
-  admin has configured for Claude and proves one of them with a single
-  read-only pull, so access is verified rather than
-  assumed, explores the tools, Slack, repos and docs to learn what's available
-  and how oncall works for this team, then recommends what is missing and walks
-  the team through setting it up one step at a time. The result goes into
-  the indexed oncall memory that every channel, including new incident
-  channels, reuses; the other skills in this plugin (incident init,
-  investigation, handoff) pick it up automatically. The monitoring channel
-  also gets a short note of its own.
+  Set up Claude Tag for oncall for a team, from that team's standing (public) oncall / monitoring channel. Two
+  things: it sets the channel up for monitoring, so alerts and incident posts here (from a person or another
+  Slack bot) get triaged and acted on automatically, and it finds and sets up the connectors, plugins and skills
+  Claude uses for oncall. A workspace can have several such channels; run once in each, by anyone, and every run
+  adds or updates that team's section in the one oncall memory in shared workspace memory. Use on "set up
+  oncall", "init oncall", "configure Claude for on-call". Surveys the agent connectors an admin configured for
+  Claude, proves one with a read-only pull so access is verified, explores tools, Slack, repos and docs to learn
+  how oncall works here, then recommends what's missing and walks the team through setup. The result goes into
+  the indexed oncall memory every channel reuses; the other skills (incident init, investigation, handoff) pick
+  it up automatically.
 ---
 
 # Oncall init (per team, one oncall memory)

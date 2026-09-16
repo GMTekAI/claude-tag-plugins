@@ -1,20 +1,16 @@
 ---
 name: oncall-handoff
 description: >-
-  Run the oncall handoff for a rotation window — the whole handoff, not just a document: build the
-  summary (what the incoming oncall needs to know first, what is still open, incidents with impact
-  numbers, alert and page counts, hygiene suggestions, every number traceable to a source), post it
-  as the report for the outgoing oncall to correct, walk the incoming oncall through the open items
-  and answer their questions in the thread, update the open-items list as they respond, and note
-  when the incoming person acknowledges. Runs mainly in the team's standing oncall / monitoring
-  channel, normally as a scheduled routine that fires at rotation change so the report is waiting
-  when the shift turns over; it can also be asked for by hand ("@Claude run the handoff"), and
-  works from an incident channel too. Use when a scheduled handoff routine fires, or on "handoff",
-  "hand-off", "hand over", "oncall summary", "shift summary", "weekly oncall report", "what
-  happened this shift / this week", "write up the rotation", or when someone asks @Claude in the
-  channel to run or write the handoff. Re-running for the same window updates the report rather
-  than duplicating it. Unattended runs always carry a run-summary block and at least one chart so
-  the post stands on its own.
+  Run the oncall handoff for a rotation window — the whole handoff, not just a document: build the summary (what
+  the incoming oncall needs first, what's still open, incidents with impact numbers, alert and page counts,
+  hygiene suggestions, every number traceable to a source), post it for the outgoing oncall to correct, walk the
+  incoming oncall through the open items in the thread, update the list as they respond, and note when they
+  acknowledge. Runs mainly in the team's standing oncall / monitoring channel, normally as a scheduled routine
+  firing at rotation change so the report is waiting when the shift turns over; can also be run by hand and
+  works from an incident channel. Use when a handoff routine fires, or on "handoff", "hand over", "oncall
+  summary", "weekly oncall report", "what happened this shift / this week". Re-running for the same window
+  updates the report rather than duplicating it. Unattended runs carry a run-summary block and at least one
+  chart.
 ---
 
 # oncall-handoff
