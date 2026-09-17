@@ -1,20 +1,16 @@
 ---
 name: incident-sitrep
 description: >-
-  Post a sitrep (situation report) for a live incident, in its incident channel: a short update
-  in a fixed layout for people who have not read the whole channel — the current picture and what
-  moved since the previous update, nothing more. Use on "sitrep", "status update", "where are we",
-  "what's the latest", "catch me up", "summarize the incident so far", "update for leadership /
-  support / customers", or when asked to keep posting one on a schedule ("post a sitrep every hour
-  until this is resolved"); also when the oncall memory sets an update cadence for incidents of
-  this severity and the person running the incident asks Claude to keep it. Reads the channel, the
-  alert thread and the findings already posted, re-reads the one key signal, and writes: status
-  line, TL;DR, impact, what changed since the last sitrep, what is in progress and who has it,
-  what is needed, when the next update comes, one chart. Facts come only from what people in the
-  channel said or what Claude read first-hand; cause and recovery time are never Claude's guess.
-  Fits one phone screen. Versions for other audiences (customers, executives, support) come out
-  for a person to review and send. Does not investigate (that is `incident-investigate`) and is
-  not the write-up afterwards (`incident-postmortem`).
+  Post a sitrep (situation report) for a live incident, in its incident channel: a short fixed-layout update for
+  people who haven't read the whole channel — the current picture and what moved since the previous update. Use
+  on "sitrep", "status update", "where are we", "what's the latest", "catch me up", "summarize the incident so
+  far", when asked to keep posting on a schedule ("post a sitrep every hour until resolved"), or when the oncall
+  memory sets an update cadence for this severity and the incident owner asks Claude to keep it. Reads the
+  channel, alert thread and findings posted, re-reads the one key signal, and writes: status line, TL;DR,
+  impact, what changed since the last sitrep, what's in progress and who has it, what's needed, when the next
+  update comes, one chart. Facts come only from what people said or Claude read first-hand; cause and recovery
+  time are never guessed. Fits one phone screen. Not investigation (`incident-investigate`) or the write-up
+  afterwards (`incident-postmortem`).
 ---
 
 # incident-sitrep

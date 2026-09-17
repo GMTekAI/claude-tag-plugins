@@ -1,20 +1,16 @@
 ---
 name: incident-init
 description: >-
-  Automatic init the first time Claude acts in an incident or alerts channel — a channel named like
-  #inc-…, #incident-…, #sev0-…/#sev1-…, or one whose recent messages are pages or alerts — posted
-  by PagerDuty, Opsgenie, incident.io, Datadog, Sentry or Grafana, or typed by people relaying
-  them; ordinary talk about having been paged is not an alert — and that is not already set up as
-  a team's oncall / monitoring channel. Run it once per channel, on first contact (just invited,
-  first @-mention, channel just created), before doing whatever was asked: load the
-  oncall memory that oncall setup wrote to shared workspace memory, pick the owning team's section,
-  work out which monitoring / paging / error-tracking / code tools Claude can reach directly and
-  which are missing, post one short message a reader with zero context can follow, note
-  what was found in this channel's memory so threads don't repeat it, then hand off to
-  `incident-investigate` if something was asked — or immediately, with nobody having asked, when
-  the channel itself was plainly opened for a live outage, so responders arrive to a briefing
-  (otherwise wait to be asked). Works the same with no oncall memory anywhere (and offers setup
-  once). Also on "load the oncall setup here" / "init this incident".
+  Automatic init the first time Claude acts in an incident or alerts channel — one named like #inc-…,
+  #incident-…, #sev0-…/#sev1-…, or whose recent messages are pages or alerts from PagerDuty, Opsgenie,
+  incident.io, Datadog, Sentry or Grafana, or relayed by people (talk about being paged is not an alert) — that
+  isn't already a team's oncall / monitoring channel. Run once per channel, on first contact (just invited,
+  first @-mention, channel just created), before doing what was asked: load the oncall memory oncall setup wrote
+  to shared workspace memory, pick the owning team's section, work out which monitoring / paging / code tools
+  Claude can reach and which are missing, post one short zero-context message, note findings in this channel's
+  memory, then hand off to `incident-investigate` if something was asked — or immediately, unasked, when the
+  channel was plainly opened for a live outage. Works with no oncall memory (offers setup once). Also on "load
+  the oncall setup here" / "init this incident".
 ---
 
 # incident-init
